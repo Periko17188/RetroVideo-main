@@ -2,6 +2,7 @@ package com.pedrosanchez.netflix_clone.service;
 
 import com.pedrosanchez.netflix_clone.model.User;
 import com.pedrosanchez.netflix_clone.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -10,14 +11,10 @@ import java.util.Optional;
 
 // Servicio que permite a Spring Security obtener la información de un usuario desde la base de datos
 @Service
+@RequiredArgsConstructor
 public class JpaUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
-
-    // Constructor con inyección de dependencias del repositorio de usuarios
-    public JpaUserDetailsService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     // Carga los datos de un usuario por su nombre de usuario
     @Override

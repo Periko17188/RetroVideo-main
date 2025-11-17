@@ -1,9 +1,14 @@
 package com.pedrosanchez.netflix_clone.model;
 
 import jakarta.persistence.*;
+import lombok.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@RequiredArgsConstructor
 @Entity
 @Table(name = "orders")
 public class Order {
@@ -13,14 +18,18 @@ public class Order {
     private Long id;
 
     // Usuario que realiza la compra
+    @NonNull
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
+    @NonNull
     private LocalDateTime orderDate;
+    @NonNull
     private Double totalAmount;
 
     // Lista de películas incluidas en la compra
+    @NonNull
     @ManyToMany
     @JoinTable(
             name = "order_movies",
@@ -28,27 +37,4 @@ public class Order {
             inverseJoinColumns = @JoinColumn(name = "movie_id")
     )
     private List<Movie> movies;
-
-    public Order() {}
-
-    public Order(User user, LocalDateTime orderDate, Double totalAmount, List<Movie> movies) {
-        this.user = user;
-        this.orderDate = orderDate;
-        this.totalAmount = totalAmount;
-        this.movies = movies;
-    }
-
-    // Getters y Setters
-    public Long getId() { return id; }
-    public User getUser() { return user; }
-    public void setUser(User user) { this.user = user; }
-
-    public LocalDateTime getOrderDate() { return orderDate; }
-    public void setOrderDate(LocalDateTime orderDate) { this.orderDate = orderDate; }
-
-    public Double getTotalAmount() { return totalAmount; }
-    public void setTotalAmount(Double totalAmount) { this.totalAmount = totalAmount; }
-
-    public List<Movie> getMovies() { return movies; }
-    public void setMovies(List<Movie> movies) { this.movies = movies; }
 }

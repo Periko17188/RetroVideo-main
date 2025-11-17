@@ -4,6 +4,7 @@ import com.pedrosanchez.netflix_clone.model.Genre;
 import com.pedrosanchez.netflix_clone.model.Movie;
 import com.pedrosanchez.netflix_clone.repository.GenreRepository;
 import com.pedrosanchez.netflix_clone.repository.MovieRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import java.util.Arrays;
@@ -13,16 +14,11 @@ import java.util.Set;
 //Clase que se ejecuta automáticamente al iniciar la aplicación.
 //Su función es cargar datos iniciales (géneros y películas) en la base de datos.
 @Component
+@RequiredArgsConstructor
 public class DataLoader implements CommandLineRunner {
 
     private final GenreRepository genreRepository;
     private final MovieRepository movieRepository;
-
-    // Constructor para inyectar los repositorios de géneros y películas
-    public DataLoader(GenreRepository genreRepository, MovieRepository movieRepository) {
-        this.genreRepository = genreRepository;
-        this.movieRepository = movieRepository;
-    }
 
     @Override
     public void run(String... args) throws Exception {
@@ -30,7 +26,7 @@ public class DataLoader implements CommandLineRunner {
         // Si ya existen datos en la base de datos, no se cargan de nuevo
         if (movieRepository.count() > 0 && genreRepository.count() > 0) {
             System.out.println("--- DATOS YA EXISTENTES, NO SE CARGAN DATOS INICIALES ---");
-            return; // Salir si ya hay datos
+            return;
         }
 
         System.out.println("--- INICIANDO CARGA DE DATOS INICIALES (SEED DATA) ---");

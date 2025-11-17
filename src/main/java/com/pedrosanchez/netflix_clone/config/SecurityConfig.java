@@ -2,32 +2,24 @@ package com.pedrosanchez.netflix_clone.config;
 
 import com.pedrosanchez.netflix_clone.service.JpaUserDetailsService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
 // Clase de configuración de seguridad para la aplicación.
 // Aquí se definen los permisos, el login, el logout y la codificación de contraseñas.
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final JpaUserDetailsService jpaUserDetailsService;
-
-    // Constructor que recibe el servicio encargado de cargar los usuarios
-    public SecurityConfig(JpaUserDetailsService jpaUserDetailsService) {
-        this.jpaUserDetailsService = jpaUserDetailsService;
-    }
 
     // Configura las reglas de seguridad y las rutas protegidas
     @Bean

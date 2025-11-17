@@ -2,20 +2,17 @@ package com.pedrosanchez.netflix_clone.service;
 
 import com.pedrosanchez.netflix_clone.model.Movie;
 import com.pedrosanchez.netflix_clone.repository.MovieRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
 // Servicio que contiene la lógica de negocio relacionada con las películas
 @Service
+@RequiredArgsConstructor
 public class MovieService {
 
     private final MovieRepository movieRepository;
-
-    // Constructor con inyección de dependencias del repositorio de películas
-    public MovieService(MovieRepository movieRepository) {
-        this.movieRepository = movieRepository;
-    }
 
     // Obtiene todas las películas de la base de datos
     public List<Movie> findAll() {

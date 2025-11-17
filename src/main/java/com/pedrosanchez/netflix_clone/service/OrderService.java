@@ -2,20 +2,17 @@ package com.pedrosanchez.netflix_clone.service;
 
 import com.pedrosanchez.netflix_clone.model.*;
 import com.pedrosanchez.netflix_clone.repository.OrderRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class OrderService {
 
     private final OrderRepository orderRepository;
     private final CartService cartService;
-
-    public OrderService(OrderRepository orderRepository, CartService cartService) {
-        this.orderRepository = orderRepository;
-        this.cartService = cartService;
-    }
 
     // Crea una compra ficticia a partir del carrito del usuario
     public Order createOrder(User user, List<Movie> movies) {

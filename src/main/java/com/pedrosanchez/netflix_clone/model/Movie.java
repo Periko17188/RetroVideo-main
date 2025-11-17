@@ -1,10 +1,15 @@
 package com.pedrosanchez.netflix_clone.model;
 
 import jakarta.persistence.*;
+import lombok.*;
 import java.util.HashSet;
 import java.util.Set;
 
 // Entidad que representa una película en la base de datos.
+@Getter
+@Setter
+@NoArgsConstructor
+@RequiredArgsConstructor
 @Entity
 @Table(name = "pelicula")
 public class Movie {
@@ -13,12 +18,21 @@ public class Movie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NonNull
     private String titulo;
-    // Descripción de la película
+
     @Column(length = 1000)
+    @NonNull
     private String sinopsis;
+
+    @NonNull
     private Integer anio;
+
+    @NonNull
     private String imagenUrl;
+
+    @NonNull
     private Double rating;
 
     // Una película puede tener múltiples géneros.
@@ -30,39 +44,8 @@ public class Movie {
     )
     private Set<Genre> generos = new HashSet<>();
 
-    public Movie() {
-    }
-
-    public Movie(String titulo, String sinopsis, Integer anio, String imagenUrl, Double rating) {
-        this.titulo = titulo;
-        this.sinopsis = sinopsis;
-        this.anio = anio;
-        this.imagenUrl = imagenUrl;
-        this.rating = rating;
-    }
-
-    // Getters y Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getTitulo() { return titulo; }
-    public void setTitulo(String titulo) { this.titulo = titulo; }
-
-    public String getSinopsis() { return sinopsis; }
-    public void setSinopsis(String sinopsis) { this.sinopsis = sinopsis; }
-
-    public Integer getAnio() { return anio; }
-    public void setAnio(Integer anio) { this.anio = anio; }
-
-    public String getImagenUrl() { return imagenUrl; }
-    public void setImagenUrl(String imagenUrl) { this.imagenUrl = imagenUrl; }
-
-    public Double getRating() { return rating; }
-    public void setRating(Double rating) { this.rating = rating; }
-
-    public Set<Genre> getGeneros() { return generos; }
-    public void setGeneros(Set<Genre> generos) { this.generos = generos; }
-
     // Metodo auxiliar para añadir un género a la película
-    public void addGenre(Genre genre) { this.generos.add(genre); }
+    public void addGenre(Genre genre) {
+        this.generos.add(genre);
+    }
 }

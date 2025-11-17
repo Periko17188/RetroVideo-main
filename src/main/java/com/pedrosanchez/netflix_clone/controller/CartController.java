@@ -6,25 +6,22 @@ import com.pedrosanchez.netflix_clone.model.User;
 import com.pedrosanchez.netflix_clone.repository.MovieRepository;
 import com.pedrosanchez.netflix_clone.repository.UserRepository;
 import com.pedrosanchez.netflix_clone.service.CartService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/cart")
+@RequiredArgsConstructor
 public class CartController {
 
     private final CartService cartService;
     private final UserRepository userRepository;
     private final MovieRepository movieRepository;
-
-    public CartController(CartService cartService, UserRepository userRepository, MovieRepository movieRepository) {
-        this.cartService = cartService;
-        this.userRepository = userRepository;
-        this.movieRepository = movieRepository;
-    }
 
     // Añade una película al carrito
     @PostMapping("/add/{movieId}")

@@ -4,17 +4,16 @@ import com.pedrosanchez.netflix_clone.model.CartItem;
 import com.pedrosanchez.netflix_clone.model.Movie;
 import com.pedrosanchez.netflix_clone.model.User;
 import com.pedrosanchez.netflix_clone.repository.CartItemRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CartService {
 
     private final CartItemRepository cartItemRepository;
-
-    public CartService(CartItemRepository cartItemRepository) {
-        this.cartItemRepository = cartItemRepository;
-    }
 
     // Añade una película al carrito del usuario
     public void addToCart(User user, Movie movie) {
