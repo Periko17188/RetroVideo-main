@@ -33,4 +33,7 @@ public class CartItem {
     // Precio simulado de la película
     @NonNull
     private Double price;
+
+    @Column(nullable = false)
+    private Integer quantity = 1;
 }

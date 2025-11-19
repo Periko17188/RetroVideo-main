@@ -77,4 +77,17 @@ public class CartController {
 
         return ResponseEntity.ok("Artículo eliminado del carrito");
     }
+
+    @PutMapping("/{id}/quantity")
+    public ResponseEntity<?> updateItemQuantity(
+            @PathVariable Long id,
+            @RequestParam int quantity) {
+        
+        if (quantity < 1) {
+            return ResponseEntity.badRequest().body("La cantidad debe ser al menos 1");
+        }
+        
+        cartService.updateCartItemQuantity(id, quantity);
+        return ResponseEntity.ok("Cantidad actualizada correctamente");
+    }
 }

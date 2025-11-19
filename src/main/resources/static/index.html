@@ -55,8 +55,21 @@
                 🛒
                 <span id="cart-badge">0</span>
             </button>
-            <div id="cart-dropdown">
-                <!-- Lista del carrito (render dinámico) -->
+            <div id="cart-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-gray-800 rounded-md shadow-lg z-50 p-4">
+                <h3 class="text-lg font-semibold text-white mb-3">Tu Carrito</h3>
+                <div id="cart-items-list" class="space-y-2">
+                    <!-- Los ítems se renderizarán aquí -->
+                </div>
+                <div class="mt-4 pt-4 border-t border-gray-700">
+                    <div class="flex justify-between items-center">
+                        <span class="font-semibold text-white">Total:</span>
+                        <span id="cart-total" class="font-bold text-lg text-white">0.00€</span>
+                    </div>
+                    <button onclick="checkout()" 
+                            class="w-full mt-4 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                        Finalizar Compra
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -580,48 +593,77 @@
 
     // Actualiza badge, listado desplegable y visibilidad
     function updateCartUI() {
-    const badge = document.getElementById('cart-badge');
-    const dd = document.getElementById('cart-dropdown');
-
-    if (cart.length > 0) {
-        badge.textContent = cart.length;
-        badge.style.display = 'inline-block';
-    } else {
-        badge.style.display = 'none';
-    }
-
-    dd.innerHTML = '';
-
+    const cartItemsList = document.getElementById('cart-items-list');
+    const cartTotal = document.getElementById('cart-total');
+    const cartBadge = document.getElementById('cart-badge');
+    
+    // Actualizar contador del carrito
+    const itemCount = cart.reduce((total, item) => total + (item.quantity || 1), 0);
+    cartBadge.textContent = itemCount;
+    cartBadge.style.display = itemCount > 0 ? 'inline-block' : 'none';
+    
     if (cart.length === 0) {
-        dd.innerHTML = '<p class="text-sm text-gray-300 p-2">El carrito está vacío.</p>';
+        cartItemsList.innerHTML = '<p class="text-gray-400 py-4 text-center">Tu carrito está vacío</p>';
+        cartTotal.textContent = '0.00€';
         return;
     }
 
-    cart.forEach(item => {
-        const row = document.createElement('div');
-        row.className = 'cart-item';
-        row.innerHTML = `
-            <span class="cart-item-title">${item.movie.titulo}</span>
-            <span>${item.price}€
-                <button class="text-red-500 hover:text-red-400"
-                        title="Eliminar"
-                        onclick="removeFromCart(${item.id})">❌</button>
-            </span>
+    let total = 0;
+    cartItemsList.innerHTML = cart.map(item => {
+        const itemTotal = (item.price || 5.99) * (item.quantity || 1);
+        total += itemTotal;
+        
+        return `
+            <div class="flex justify-between items-center p-2 hover:bg-gray-700 rounded">
+                <div class="flex-1">
+                    <p class="text-white">${item.movie?.titulo || 'Película'}</p>
+                    <p class="text-gray-400 text-sm">${(item.price || 5.99).toFixed(2)}€ c/u</p>
+                </div>
+                    <div class="flex items-center">
+                        <!-- Grupo de botones de cantidad -->
+                        <div class="flex items-center space-x-1">
+                            <button onclick="updateCartItemQuantity(${item.id}, ${(item.quantity || 1) - 1})" 
+                                    class="px-2 py-1 bg-gray-600 rounded hover:bg-gray-500">-</button>
+                            <span class="w-8 text-center">${item.quantity || 1}</span>
+                            <button onclick="updateCartItemQuantity(${item.id}, ${(item.quantity || 1) + 1})" 
+                                    class="px-2 py-1 bg-gray-600 rounded hover:bg-gray-500">+</button>
+                        </div>
+                        <!-- Botón de eliminar con margen izquierdo -->
+                        <button onclick="removeFromCart(${item.id})" 
+                                class="ml-3 px-3 py-1 bg-red-600 text-white rounded hover:bg-red-500">
+                            ×
+                        </button>
+                    </div>
+            </div>
         `;
-        dd.appendChild(row);
-    });
+    }).join('');
 
-    const total = cart.reduce((sum, item) => sum + item.price, 0).toFixed(2);
-    const totalDiv = document.createElement('div');
-    totalDiv.className = 'cart-total flex justify-between mt-2';
-    totalDiv.innerHTML = `<span>Total:</span><span>${total}€</span>`;
-    dd.appendChild(totalDiv);
+    cartTotal.textContent = `${total.toFixed(2)}€`;
+}
 
-    const checkoutBtn = document.createElement('button');
-    checkoutBtn.className = 'bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-3 rounded w-full mt-3';
-    checkoutBtn.textContent = 'Finalizar compra';
-    checkoutBtn.onclick = checkout;
-    dd.appendChild(checkoutBtn);
+async function updateCartItemQuantity(itemId, newQuantity) {
+    if (newQuantity < 1) return;
+    
+    const base64 = btoa(`${authUsername}:${authPassword}`);
+    try {
+        const res = await fetch(`${API_URL}/cart/${itemId}/quantity?quantity=${newQuantity}`, {
+            method: 'PUT',
+            headers: { 
+                'Authorization': `Basic ${base64}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (res.ok) {
+            await loadCartFromBackend();
+        } else {
+            const error = await res.text();
+            showCustomMessage(error || 'Error al actualizar la cantidad', 'error');
+        }
+    } catch (e) {
+        console.error('Error al actualizar cantidad:', e);
+        showCustomMessage('Error de conexión', 'error');
+    }
 }
 
 function syncBuyButtonsWithCart() {
