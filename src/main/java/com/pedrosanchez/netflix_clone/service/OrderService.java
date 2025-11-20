@@ -22,41 +22,56 @@ public class OrderService {
     // Crea una nueva orden a partir del carrito del usuario
     @Transactional
     public Order createOrder(User user, List<Movie> movies) {
-        if (movies == null || movies.isEmpty()) {
-            throw new IllegalArgumentException("La lista de películas no puede estar vacía");
+
+        // Los Movie que llegan NO incluyen quantity → NO los usamos directamente
+        List<CartItem> cartItems = cartService.getCartItems(user);
+
+        if (cartItems.isEmpty()) {
+            throw new IllegalArgumentException("El carrito está vacío");
         }
 
         try {
-            // Cargar las películas completas para evitar problemas de proxy
-            List<Movie> managedMovies = new ArrayList<>();
-            for (Movie movie : movies) {
-                Movie managedMovie = movieService.findById(movie.getId())
-                        .orElseThrow(() -> new NotFoundException("Película no encontrada con ID: " + movie.getId()));
-                managedMovies.add(managedMovie);
-            }
 
-            // Calcular el total (precio fijo de 5.99 por película)
-            double total = Math.round(managedMovies.size() * 5.99 * 100.0) / 100.0;
-
-            // Crear y guardar la orden
+            // Crear orden vacía
             Order order = Order.builder()
                     .user(user)
                     .orderDate(LocalDateTime.now())
-                    .totalAmount(total)
+                    .totalAmount(0.0)
                     .build();
-            
-            // Añadir películas a la orden
-            managedMovies.forEach(order::addMovie);
-            
+
+            List<Movie> moviesToSave = new ArrayList<>();
+            double total = 0.0;
+
+            // Convertir cada CartItem en tantas películas como quantity
+            for (CartItem item : cartItems) {
+                Movie managedMovie = movieService.findById(item.getMovie().getId())
+                        .orElseThrow(() -> new NotFoundException(
+                                "Película no encontrada con ID: " + item.getMovie().getId()));
+
+                // Añadir *quantity* veces la película a la orden
+                for (int i = 0; i < item.getQuantity(); i++) {
+                    moviesToSave.add(managedMovie);
+                }
+
+                // Acumular precio
+                total += item.getPrice() * item.getQuantity();
+            }
+
+            // Redondear a 2 decimales
+            total = Math.round(total * 100.0) / 100.0;
+            order.setTotalAmount(total);
+
+            // Añadir las películas (repetidas según quantity)
+            moviesToSave.forEach(order::addMovie);
+
+            // Guardar la orden completa
             Order savedOrder = orderRepository.save(order);
-            
-            // Vaciar el carrito después de crear la orden
+
+            // Vaciar carrito
             cartService.clearCart(user);
-            
+
             return savedOrder;
-            
-        } catch (NotFoundException e) {
-            throw e; // Relanzar NotFoundException
+
         } catch (Exception e) {
             throw new RuntimeException("Error al crear la orden: " + e.getMessage(), e);
         }
