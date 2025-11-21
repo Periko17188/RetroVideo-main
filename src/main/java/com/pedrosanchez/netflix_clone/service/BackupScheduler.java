@@ -18,7 +18,7 @@ import java.nio.file.Paths;
 public class BackupScheduler {
 
     private final AdminService adminService;
-    private static final String BACKUP_BASE_PATH = "C:\\Users\\perik\\Desktop\\Proyectos\\pedflix\\backup";
+    private static final String BACKUP_BASE_PATH = "C:\\Users\\perik\\Desktop\\Pedflix-main\\backup";
 
     /**
      * Programa la generación de copias de seguridad cada 15 minutos

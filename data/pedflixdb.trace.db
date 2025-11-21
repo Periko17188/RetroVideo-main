@@ -2,3 +2,7 @@
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Error de Sintaxis en sentencia SQL "[*]APP_USER"; se esperaba "ALTER, ANALYZE"
 Syntax error in SQL statement "[*]APP_USER"; expected "ALTER, ANALYZE"; SQL statement:
 APP_USER [42001-232]
+2025-11-21 00:54:22.453223+01:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Error de Sintaxis en sentencia SQL "DROP [*]TABLEPEDIDO_PELICULAS"; se esperaba "TABLE, INDEX, USER, SEQUENCE, CONSTANT, TRIGGER, MATERIALIZED, VIEW, ROLE, ALIAS, SCHEMA, ALL OBJECTS, DOMAIN, TYPE, AGGREGATE, SYNONYM"
+Syntax error in SQL statement "DROP [*]TABLEPEDIDO_PELICULAS"; expected "TABLE, INDEX, USER, SEQUENCE, CONSTANT, TRIGGER, MATERIALIZED, VIEW, ROLE, ALIAS, SCHEMA, ALL OBJECTS, DOMAIN, TYPE, AGGREGATE, SYNONYM"; SQL statement:
+DROP TABLEPEDIDO_PELICULAS [42001-232]
