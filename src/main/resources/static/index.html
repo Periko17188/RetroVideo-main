@@ -334,25 +334,27 @@
 
   <script src="script.js"></script>
 
-  <!-- MODAL DETALLE SIMPLE -->
+  <!-- MODAL DETALLE PREMIUM -->
   <div id="movie-details-modal"
-       class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center z-50">
+       class="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm hidden
+            flex items-center justify-center z-50 transition-opacity duration-300">
 
-    <div class="bg-gray-900 text-white rounded-lg p-5 w-full max-w-md shadow-xl relative">
+    <div id="movie-details-content"
+         class="bg-gray-900 text-white rounded-2xl shadow-2xl p-6 w-full max-w-md
+              transform scale-90 opacity-0 transition-all duration-300 relative">
 
-      <!-- Cerrar -->
+      <!-- Botón cerrar -->
       <button onclick="closeMovieDetails()"
-              class="absolute top-2 right-2 text-2xl text-gray-300 hover:text-white">
+              class="absolute top-2 right-2 text-2xl text-gray-400 hover:text-white">
         &times;
       </button>
 
-      <h2 id="details-title" class="text-2xl font-bold mb-2"></h2>
-      <p id="details-year-genre" class="text-gray-400 text-sm mb-2"></p>
-      <p id="details-rating" class="text-yellow-400 font-semibold mb-4"></p>
-      <p id="details-sinopsis" class="text-gray-300 leading-relaxed text-sm"></p>
+      <h2 id="details-title" class="text-2xl font-bold mb-1"></h2>
+      <p id="details-year-genre" class="text-gray-400 text-sm mb-1"></p>
+      <p id="details-rating" class="text-yellow-400 font-semibold mb-3"></p>
 
-      <!-- SOLO USER -->
-      <button id="details-buy" class="hidden"></button>
+      <p id="details-sinopsis"
+         class="text-gray-300 leading-relaxed text-sm max-h-48 overflow-y-auto pr-1"></p>
 
     </div>
   </div>

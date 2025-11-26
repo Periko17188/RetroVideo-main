@@ -851,7 +851,7 @@ function validateYear(input) {
 
 async function showMovieDetails(movieId) {
   try {
-    const base64 = authUsername && authPassword
+    const base64 = (isAuthenticated && authUsername && authPassword)
       ? btoa(`${authUsername}:${authPassword}`)
       : null;
 
@@ -860,35 +860,65 @@ async function showMovieDetails(movieId) {
     });
 
     if (!res.ok) {
-      showCustomMessage("No se pudieron cargar los detalles.", "error");
+      showCustomMessage('No se pudieron cargar los detalles.', 'error');
       return;
     }
 
     const movie = await res.json();
 
-    // Rellenar texto del modal
-    document.getElementById("details-title").textContent = movie.titulo;
-    document.getElementById("details-year-genre").textContent =
-      `${movie.anio} | ${movie.generos.map(g => g.nombre).join(", ")}`;
-    document.getElementById("details-rating").textContent = `⭐ ${movie.rating} / 10`;
-    document.getElementById("details-sinopsis").textContent = movie.sinopsis;
+    // Rellenar contenido
+    document.getElementById('details-title').textContent = movie.titulo;
+    document.getElementById('details-year-genre').textContent =
+      `${movie.anio} | ${(movie.generos || []).map(g => g.nombre).join(', ')}`;
+    document.getElementById('details-rating').textContent =
+      movie.rating != null ? `⭐ ${movie.rating} / 10` : '';
+    document.getElementById('details-sinopsis').textContent = movie.sinopsis || '';
 
-    // OCULTAR SIEMPRE el botón de comprar (solo info)
-    const buyBtn = document.getElementById("details-buy");
-    buyBtn.classList.add("hidden");
-    buyBtn.onclick = null; // evitar conflictos
+    const modal = document.getElementById('movie-details-modal');
+    const content = document.getElementById('movie-details-content');
+    if (!modal || !content) return;
 
-    // Mostrar modal
-    document.getElementById("movie-details-modal").classList.remove("hidden");
+    // Mostrar modal + animación suave
+    modal.classList.remove('hidden');
+    content.style.opacity = '0';
+    content.style.transform = 'scale(0.9)';
+
+    requestAnimationFrame(() => {
+      content.style.opacity = '1';
+      content.style.transform = 'scale(1)';
+    });
 
   } catch (e) {
-    showCustomMessage("Error cargando la película.", "error");
+    console.error(e);
+    showCustomMessage('Error cargando la película.', 'error');
   }
 }
 
 function closeMovieDetails() {
-  document.getElementById("movie-details-modal").classList.add("hidden");
+  const modal = document.getElementById('movie-details-modal');
+  const content = document.getElementById('movie-details-content');
+  if (!modal || !content) return;
+
+  content.style.opacity = '0';
+  content.style.transform = 'scale(0.9)';
+
+  setTimeout(() => {
+    modal.classList.add('hidden');
+  }, 200);
 }
+
+  // Cerrar modal al hacer clic fuera del contenido
+  const movieModal = document.getElementById('movie-details-modal');
+  if (movieModal) {
+    movieModal.addEventListener('click', (e) => {
+      const content = document.getElementById('movie-details-content');
+      if (content && !content.contains(e.target)) {
+        closeMovieDetails();
+      }
+    });
+  }
+
+
 
 // --- Inicialización ---
 document.addEventListener('DOMContentLoaded', () => {
@@ -954,4 +984,14 @@ document.addEventListener('DOMContentLoaded', () => {
       cancelEditBtn.addEventListener('click', resetMovieForm);
     }
   }
+
+  const movieModal = document.getElementById('movie-details-modal');
+    if (movieModal) {
+      movieModal.addEventListener('click', (e) => {
+        const content = document.getElementById('movie-details-content');
+        if (content && !content.contains(e.target)) {
+          closeMovieDetails();
+        }
+      });
+    }
 });
