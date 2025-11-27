@@ -40,7 +40,15 @@ function updateUI(user, logged = false, roles = []) {
   window.userRoles = roles || [];
 
   if (logged) {
+
       const isAdmin = roles.includes("ROLE_ADMIN");
+
+      // Mostrar menú para USER
+      if (!isAdmin) {
+          document.getElementById("user-menu-container")?.classList.remove("hidden");
+      } else {
+          document.getElementById("user-menu-container")?.classList.add("hidden");
+      }
 
       // Mostrar buscador
       document.getElementById("search-bar")?.classList.remove("hidden");
@@ -53,8 +61,9 @@ function updateUI(user, logged = false, roles = []) {
       openLogin.classList.add('hidden');
       openRegister.classList.add('hidden');
       logoutBtn.classList.remove('hidden');
+      logoutBtn.classList.toggle('hidden', !isAdmin);
 
-      userDisplay.textContent = `Bienvenida, ${user}`;
+      userDisplay.textContent = `Bienvenid@, ${user}`;
       userDisplay.classList.remove('hidden');
 
       // ADMIN: mostrar panel admin
@@ -62,6 +71,9 @@ function updateUI(user, logged = false, roles = []) {
       document.getElementById('admin-controls')?.classList.toggle('hidden', !isAdmin);
 
   } else {
+
+      // Ocultar menú user
+      document.getElementById("user-menu-container")?.classList.add("hidden");
 
       // Ocultar buscador
       document.getElementById("search-bar")?.classList.add("hidden");
@@ -77,6 +89,7 @@ function updateUI(user, logged = false, roles = []) {
       // Ocultar carrito siempre si no hay sesión
       document.getElementById('cart-container')?.classList.add('hidden');
   }
+
 }
 
 function handleLogout(){
@@ -84,6 +97,45 @@ function handleLogout(){
   cart = []; updateCartUI();
   updateUI(null,false);
   showCustomMessage('Has cerrado sesión correctamente.','success');
+}
+
+async function deleteUserAccount() {
+  if (!authUsername || !authPassword) {
+    showCustomMessage("Debes iniciar sesión.", "error");
+    return;
+  }
+
+  const confirmDelete = confirm("¿Seguro que deseas eliminar tu cuenta? Esta acción es irreversible.");
+  if (!confirmDelete) return;
+
+  try {
+    const base64 = btoa(`${authUsername}:${authPassword}`);
+
+    const res = await fetch(`${API_URL}/usuarios/me`, {
+      method: "DELETE",
+      headers: {
+        "Authorization": `Basic ${base64}`
+      }
+    });
+
+    if (res.ok) {
+      showCustomMessage("Cuenta eliminada correctamente", "success");
+
+      // Cerrar sesión por completo
+      authUsername = null;
+      authPassword = null;
+      window.userRoles = [];
+      cart = [];
+      updateCartUI();
+      updateUI(null, false);
+
+    } else {
+      showCustomMessage("Error al eliminar la cuenta.", "error");
+    }
+
+  } catch (e) {
+    showCustomMessage("Error de conexión.", "error");
+  }
 }
 
 // --- Login / Registro ---
@@ -137,7 +189,7 @@ async function handleLogin() {
     await fetchGenres();
     await fetchMovies();
 
-    showCustomMessage(`¡Inicio de sesión exitoso! Bienvenida, ${username}.`, 'success');
+    showCustomMessage(`¡Inicio de sesión exitoso! Bienvenid@, ${username}.`, 'success');
 
   } catch (err) {
     msg.textContent = 'Error de conexión con el servidor.';
@@ -1058,4 +1110,25 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+});
+// --- MENÚ DE USUARIO ---
+const userMenuBtn = document.getElementById("user-menu-btn");
+const userMenuDropdown = document.getElementById("user-menu-dropdown");
+const userMenuContainer = document.getElementById("user-menu-container");
+
+// Toggle menú
+if (userMenuBtn) {
+  userMenuBtn.addEventListener("click", () => {
+    userMenuDropdown.classList.toggle("hidden");
+  });
+}
+
+// Cerrar al hacer clic fuera
+document.addEventListener("click", (e) => {
+  if (
+    userMenuContainer &&
+    !userMenuContainer.contains(e.target)
+  ) {
+    userMenuDropdown.classList.add("hidden");
+  }
 });

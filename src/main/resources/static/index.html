@@ -63,9 +63,47 @@
         </button>
       </div>
 
+      <!-- MENÚ DE USUARIO -->
+      <div id="user-menu-container" class="hidden relative">
+        <button id="user-menu-btn"
+                class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded flex items-center gap-2">
+          <span id="user-display">Usuario</span>
+          <span>⌄</span>
+        </button>
 
-      <!-- Bienvenida + Logout -->
-      <span id="user-display" class="hidden bg-green-600 text-white font-semibold py-2 px-4 rounded"></span>
+        <!-- Dropdown -->
+        <div id="user-menu-dropdown"
+             class="hidden absolute right-0 mt-2 w-48 bg-gray-800 border border-gray-700 rounded-lg shadow-xl py-2 z-50">
+
+          <button class="menu-item px-4 py-2 w-full text-left hover:bg-gray-700 flex gap-2 items-center"
+                  onclick="openUserProfile()">
+            👤 <span>Perfil</span>
+          </button>
+
+          <button class="menu-item px-4 py-2 w-full text-left hover:bg-gray-700 flex gap-2 items-center"
+                  onclick="openUserLibrary()">
+            📚 <span>Mi Biblioteca</span>
+          </button>
+
+          <button class="menu-item px-4 py-2 w-full text-left hover:bg-gray-700 flex gap-2 items-center"
+                  onclick="openUserFavorites()">
+            ⭐ <span>Favoritos</span>
+          </button>
+
+          <div class="border-t border-gray-700 my-2"></div>
+
+          <button class="menu-item px-4 py-2 w-full text-left hover:bg-gray-700"
+                  onclick="handleLogout()">
+            🚪 <span>Cerrar Sesión</span>
+          </button>
+
+          <button class="menu-item px-4 py-2 w-full text-left text-red-400 hover:bg-gray-700"
+                  onclick="deleteUserAccount()">
+            🗑️ <span>Eliminar Usuario</span>
+          </button>
+        </div>
+      </div>
+
       <button id="logout-btn"
         class="hidden bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded transition">
         Cerrar Sesión

@@ -48,6 +48,9 @@ public class SecurityConfig {
                         // Endpoint para obtener datos del usuario actual
                         .requestMatchers("/api/v1/me").authenticated()
 
+                        // Endpoint para eliminar el usuario actual
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/usuarios/me").hasRole("USER")
+
                         // ADMIN: CRUD películas + backups
                         .requestMatchers(HttpMethod.POST, "/api/v1/peliculas").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/peliculas/**").hasRole("ADMIN")
