@@ -53,6 +53,10 @@ function updateUI(user, logged = false, roles = []) {
       // Mostrar buscador
       document.getElementById("search-bar")?.classList.remove("hidden");
 
+      // Limpiar el buscador al iniciar sesión
+      const searchInput = document.getElementById("search-input");
+      if (searchInput) searchInput.value = "";
+
       // Carrito SOLO para USER
       document.getElementById("cart-container")?.classList.toggle("hidden", isAdmin);
 
@@ -970,19 +974,6 @@ function closeMovieDetails() {
   }, 200);
 }
 
-  // Cerrar modal al hacer clic fuera del contenido
-  const movieModal = document.getElementById('movie-details-modal');
-  if (movieModal) {
-    movieModal.addEventListener('click', (e) => {
-      const content = document.getElementById('movie-details-content');
-      if (content && !content.contains(e.target)) {
-        closeMovieDetails();
-      }
-    });
-  }
-
-
-
 // --- Inicialización ---
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -1065,7 +1056,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const searchBtn   = document.getElementById("search-btn");
 
   function searchMovie() {
-    const term = searchInput.value.toLowerCase().trim();
+    const termRaw = searchInput.value;
+    const term = termRaw.trim().toLowerCase();
     if (!term) return;
 
     if (!Array.isArray(movies) || movies.length === 0) {
@@ -1073,17 +1065,17 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Buscar coincidencia
+    // Buscar título EXACTO (ignorando mayúsculas/minúsculas)
     const movie = movies.find(m =>
-      m.titulo.toLowerCase().includes(term)
+      m.titulo &&
+      m.titulo.trim().toLowerCase() === term
     );
 
     if (!movie) {
-      showCustomMessage("No se encontró ninguna película.", "error");
+      showCustomMessage("No se encontró ninguna película con ese título exacto.", "error");
       return;
     }
 
-    // Scroll hacia la tarjeta
     const card = document.querySelector(`[data-movie-id="${movie.id}"]`);
     if (card) {
       card.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -1094,6 +1086,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 1500);
     }
   }
+
 
   // Click en botón
   if (searchBtn) {
@@ -1132,3 +1125,166 @@ document.addEventListener("click", (e) => {
     userMenuDropdown.classList.add("hidden");
   }
 });
+
+async function openUserProfile() {
+  try {
+    const base64 = btoa(`${authUsername}:${authPassword}`);
+
+    const res = await fetch(`${API_URL}/perfil/me`, {
+      headers: { "Authorization": `Basic ${base64}` }
+    });
+
+    if (!res.ok) {
+      showCustomMessage("Error cargando perfil", "error");
+      return;
+    }
+
+    const data = await res.json();
+
+    // Inputs
+    const usernameEl   = document.getElementById("profile-username");
+    const emailEl      = document.getElementById("profile-email");
+    const addressEl    = document.getElementById("profile-address");
+    const postalEl     = document.getElementById("profile-postal");
+    const birthYearEl  = document.getElementById("profile-birthyear");
+    const memberEl     = document.getElementById("profile-member");
+
+    if (usernameEl)  usernameEl.value  = data.username    ?? "";
+    if (emailEl)     emailEl.value     = data.email       ?? "";
+    if (addressEl)   addressEl.value   = data.address     ?? "";
+    if (postalEl)    postalEl.value    = data.postalCode  ?? "";
+    if (birthYearEl) birthYearEl.value = data.birthYear   ?? "";
+    if (memberEl)    memberEl.value    = data.memberSince ?? "—";
+
+    // Stats
+    const statPurch   = document.getElementById("stat-purchases");
+    const statFavs    = document.getElementById("stat-favorites");
+    const statMovies  = document.getElementById("stat-movies");
+
+    if (statPurch)  statPurch.textContent  = data.totalPurchases ?? 0;
+    if (statFavs)   statFavs.textContent   = data.totalFavorites ?? 0;
+    if (statMovies) statMovies.textContent = data.totalMovies    ?? 0;
+
+    // Mostrar modal
+    const modal = document.getElementById("profile-modal");
+    if (modal) modal.classList.remove("hidden");
+
+  } catch (err) {
+    console.error("openUserProfile error:", err);
+    showCustomMessage("Error inesperado al abrir perfil", "error");
+  }
+}
+
+async function saveProfile() {
+  const email = document.getElementById("profile-email");
+  const address = document.getElementById("profile-address");
+  const postal = document.getElementById("profile-postal");
+  const birthYear = document.getElementById("profile-birthyear");
+  const memberSince = document.getElementById("profile-member");
+
+  // Reset visual errors
+  [email, address, postal, birthYear].forEach(el => {
+    el.classList.remove("border-red-500");
+    el.setCustomValidity("");
+  });
+
+  // Validación de email antes de enviar
+  const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}$/;
+  if (!emailRegex.test(email.value)) {
+    email.classList.add("border-red-500");
+    email.setCustomValidity("Formato de email inválido (ej: usuario@correo.com)");
+    email.reportValidity();
+    return;
+  }
+
+  const payload = {
+    email: email.value,
+    address: address.value,
+    postalCode: postal.value,
+    birthYear: parseInt(birthYear.value),
+    memberSince: memberSince.value
+  };
+
+  const base64 = btoa(`${authUsername}:${authPassword}`);
+
+  const res = await fetch(`${API_URL}/perfil/me`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Basic ${base64}`
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (res.ok) {
+      showCustomMessage("Perfil actualizado correctamente", "success");
+
+      closeProfileModal();
+
+      // 🔥 Volver arriba a las carátulas
+      document.getElementById("main-content").scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+      });
+
+      return;
+  }
+
+  // Si hay errores → mostrarlos como tooltips bonitos del input
+  const errors = await res.json();
+
+  if (errors.email) {
+    email.classList.add("border-red-500");
+    email.setCustomValidity(errors.email);
+    email.reportValidity();
+  }
+
+  if (errors.birthYear) {
+    birthYear.classList.add("border-red-500");
+    birthYear.setCustomValidity(errors.birthYear);
+    birthYear.reportValidity();
+  }
+
+  if (errors.postalCode) {
+    postal.classList.add("border-red-500");
+    postal.setCustomValidity(errors.postalCode);
+    postal.reportValidity();
+  }
+
+  if (errors.address) {
+    address.classList.add("border-red-500");
+    address.setCustomValidity(errors.address);
+    address.reportValidity();
+  }
+}
+
+function closeProfileModal() {
+    const modal = document.getElementById("profile-modal");
+    if (modal) modal.classList.add("hidden");
+}
+
+document.addEventListener("click", (e) => {
+  const modal = document.getElementById("profile-modal");
+  const content = document.getElementById("profile-modal-content");
+
+  if (!modal || modal.classList.contains("hidden")) return;
+
+  if (content && !content.contains(e.target)) {
+    closeProfileModal();
+  }
+});
+
+// Cerrar modal al hacer clic fuera del contenido
+document.addEventListener("click", (e) => {
+    const modal = document.getElementById("profile-modal");
+    const content = document.getElementById("profile-modal-content");
+
+    if (!modal) return;
+    if (modal.classList.contains("hidden")) return;
+
+    // Si haces clic en el fondo (modal) pero NO en el contenido
+    if (modal === e.target) {
+        closeProfileModal();
+    }
+});
+

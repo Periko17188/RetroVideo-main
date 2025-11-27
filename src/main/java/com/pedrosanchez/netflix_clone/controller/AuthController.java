@@ -11,6 +11,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,6 +38,9 @@ public class AuthController {
                 dto.getUsername(),
                 passwordEncoder.encode(dto.getPassword())
         );
+
+        // Fecha de registro automático
+        newUser.setMemberSince(LocalDate.now().toString());
 
         // Rol del usuario normal
         newUser.getRoles().add("ROLE_USER");

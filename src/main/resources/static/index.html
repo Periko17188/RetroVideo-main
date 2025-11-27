@@ -22,7 +22,7 @@
         Registrarse
       </button>
       <button id="open-login-btn"
-        class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded transition">
+        class="bg-red-700 hover:bg-red-800 text-white font-semibold py-2 px-4 rounded transition">
         Iniciar Sesión
       </button>
 
@@ -58,7 +58,7 @@
                placeholder="Buscar película..."
                class="w-48 p-2 rounded bg-gray-700 border border-gray-600 text-white text-sm">
         <button id="search-btn"
-                class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-3 rounded text-sm">
+                class="bg-red-700 hover:bg-red-800 text-white font-bold py-2 px-3 rounded text-sm">
           🔍
         </button>
       </div>
@@ -217,7 +217,7 @@
             class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition hidden">Cancelar
             Edición</button>
           <button type="submit"
-            class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition">Guardar
+            class="bg-red-700 hover:bg-red-800 text-white font-bold py-2 px-4 rounded transition">Guardar
             Película</button>
         </div>
 
@@ -261,7 +261,7 @@
       <input type="password" id="login-password" class="w-full p-3 mb-6 rounded" value="12341234">
 
       <button onclick="handleLogin()"
-        class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded transition">
+        class="w-full bg-red-700 hover:bg-red-800 text-white font-bold py-3 rounded transition">
         Entrar
       </button>
     </div>
@@ -410,6 +410,73 @@
     </div>
   </div>
 
-</body>
+  <!-- MODAL PERFIL USUARIO -->
+  <div id="profile-modal"
+       class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center z-50">
 
+    <div class="bg-gray-800 p-6 rounded-lg w-full max-w-lg shadow-2xl">
+
+      <button onclick="closeProfileModal()"
+              class="absolute top-3 right-3 text-gray-400 hover:text-white text-xl">&times;</button>
+
+      <h2 class="text-2xl font-bold mb-4">Datos Personales</h2>
+
+      <label class="block mb-2 text-sm">Nombre de Usuario</label>
+      <input id="profile-username" type="text" disabled
+             class="w-full p-2 rounded bg-gray-700 border border-gray-600 mb-4">
+
+      <label class="block mb-2 text-sm">Email *</label>
+      <input id="profile-email" type="email"
+             class="w-full p-2 rounded bg-gray-700 border border-gray-600 mb-4">
+
+      <label class="block mb-2 text-sm">Dirección</label>
+      <input id="profile-address" type="text"
+             class="w-full p-2 rounded bg-gray-700 border border-gray-600 mb-4">
+
+      <div class="flex gap-4 mb-4">
+        <div class="flex-1">
+          <label class="block mb-2 text-sm">Código Postal</label>
+          <input id="profile-postal" type="text"
+                 class="w-full p-2 rounded bg-gray-700 border border-gray-600">
+        </div>
+
+        <div class="flex-1">
+          <label class="block mb-2 text-sm">Año de Nacimiento *</label>
+          <input id="profile-birthyear" type="number" min="1900" max="2300"
+                 class="w-full p-2 rounded bg-gray-700 border border-gray-600">
+        </div>
+      </div>
+
+      <label class="block mb-2 text-sm">Miembro desde</label>
+      <input id="profile-member" type="text" disabled
+             class="w-full p-2 rounded bg-gray-700 border border-gray-600 mb-6">
+
+      <button onclick="saveProfile()"
+              class="w-full bg-green-600 hover:bg-green-700 py-3 rounded text-white font-bold">
+        Guardar Cambios
+      </button>
+
+      <h3 class="text-xl font-bold mt-8 mb-4">Estadísticas</h3>
+
+      <div class="grid grid-cols-3 gap-4">
+        <div class="text-center p-3 bg-gray-800 rounded">
+          <div id="stat-purchases" class="text-2xl font-bold text-purple-400">0</div>
+          <div class="text-xs mt-1">Compras</div>
+        </div>
+
+        <div class="text-center p-3 bg-gray-800 rounded">
+          <div id="stat-favorites" class="text-2xl font-bold text-yellow-400">0</div>
+          <div class="text-xs mt-1">Favoritos</div>
+        </div>
+
+        <div class="text-center p-3 bg-gray-800 rounded">
+          <div id="stat-movies" class="text-2xl font-bold text-green-400">0</div>
+          <div class="text-xs mt-1">Películas</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</body>
 </html>

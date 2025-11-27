@@ -59,6 +59,8 @@ public class SecurityConfig {
 
                         // USER: carrito y pedidos
                         .requestMatchers("/api/v1/cart/**", "/api/v1/orders/**").hasRole("USER")
+                        .requestMatchers("/api/v1/perfil/**").hasRole("USER")
+
 
                         // El resto requiere autenticación
                         .anyRequest().authenticated()

@@ -1,8 +1,12 @@
 package com.pedrosanchez.netflix_clone.service;
 
 import com.pedrosanchez.netflix_clone.exception.NotFoundException;
-import com.pedrosanchez.netflix_clone.model.*;
+import com.pedrosanchez.netflix_clone.model.CartItem;
+import com.pedrosanchez.netflix_clone.model.Movie;
+import com.pedrosanchez.netflix_clone.model.Order;
+import com.pedrosanchez.netflix_clone.model.User;
 import com.pedrosanchez.netflix_clone.repository.OrderRepository;
+import com.pedrosanchez.netflix_clone.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +22,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final CartService cartService;
     private final MovieService movieService;
+    private final UserRepository userRepository;
 
     // Crea una nueva orden a partir del carrito del usuario
     @Transactional
@@ -66,6 +71,17 @@ public class OrderService {
 
             // Guardar la orden completa
             Order savedOrder = orderRepository.save(order);
+
+            // ACTUALIZAR ESTADÍSTICAS DEL USUARIO
+            int moviesPurchased = moviesToSave.size();
+
+            Integer currentPurchases = user.getTotalPurchases() != null ? user.getTotalPurchases() : 0;
+            Integer currentMovies = user.getTotalMovies() != null ? user.getTotalMovies() : 0;
+
+            user.setTotalPurchases(currentPurchases + 1);
+            user.setTotalMovies(currentMovies + moviesPurchased);
+
+            userRepository.save(user);
 
             // Vaciar carrito
             cartService.clearCart(user);
