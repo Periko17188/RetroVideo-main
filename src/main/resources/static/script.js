@@ -40,33 +40,42 @@ function updateUI(user, logged = false, roles = []) {
   window.userRoles = roles || [];
 
   if (logged) {
-    const isAdmin = roles.includes("ROLE_ADMIN");
+      const isAdmin = roles.includes("ROLE_ADMIN");
 
-    splash.classList.add('hidden');
-    main.classList.remove('hidden');
-    openLogin.classList.add('hidden');
-    openRegister.classList.add('hidden');
-    logoutBtn.classList.remove('hidden');
+      // Mostrar buscador
+      document.getElementById("search-bar")?.classList.remove("hidden");
 
-    userDisplay.textContent = `Bienvenida, ${user}`;
-    userDisplay.classList.remove('hidden');
+      // Carrito SOLO para USER
+      document.getElementById("cart-container")?.classList.toggle("hidden", isAdmin);
 
-    // ADMIN: mostrar panel admin
-    movieFormSection?.classList.toggle('hidden', !isAdmin);
-    document.getElementById('admin-controls')?.classList.toggle('hidden', !isAdmin);
+      splash.classList.add('hidden');
+      main.classList.remove('hidden');
+      openLogin.classList.add('hidden');
+      openRegister.classList.add('hidden');
+      logoutBtn.classList.remove('hidden');
 
-    // USER: mostrar carrito
-    cartContainer.classList.toggle('hidden', isAdmin);
+      userDisplay.textContent = `Bienvenida, ${user}`;
+      userDisplay.classList.remove('hidden');
+
+      // ADMIN: mostrar panel admin
+      movieFormSection?.classList.toggle('hidden', !isAdmin);
+      document.getElementById('admin-controls')?.classList.toggle('hidden', !isAdmin);
 
   } else {
-    splash.classList.remove('hidden');
-    main.classList.add('hidden');
-    openLogin.classList.remove('hidden');
-    openRegister.classList.remove('hidden');
-    logoutBtn.classList.add('hidden');
-    userDisplay.classList.add('hidden');
-    movieFormSection?.classList.add('hidden');
-    document.getElementById('cart-container').classList.add('hidden');
+
+      // Ocultar buscador
+      document.getElementById("search-bar")?.classList.add("hidden");
+
+      splash.classList.remove('hidden');
+      main.classList.add('hidden');
+      openLogin.classList.remove('hidden');
+      openRegister.classList.remove('hidden');
+      logoutBtn.classList.add('hidden');
+      userDisplay.classList.add('hidden');
+      movieFormSection?.classList.add('hidden');
+
+      // Ocultar carrito siempre si no hay sesión
+      document.getElementById('cart-container')?.classList.add('hidden');
   }
 }
 
@@ -261,6 +270,7 @@ function createMovieCard(movie){
   const card=document.createElement('div');
   card.className='movie-card bg-gray-900 rounded-lg overflow-hidden relative';
   card.dataset.movieId = movie.id;
+  card.style.cursor = "pointer";
   const imageFileName=movie.imagenUrl;
   const imageUrl=imageFileName?`images/${imageFileName}`:null;
   const placeholder='images/placeholder.png';
@@ -546,7 +556,7 @@ const res = await fetch(`${API_URL}/cart/add/${movie.id}`, {
 if (res.ok) {
     btn.textContent = "Añadida ✅";
     btn.disabled = true;
-    await loadCartFromBackend(); // ⬅ carrito REAL
+    await loadCartFromBackend();
     showCustomMessage("Película añadida al carrito", "success");
 } else {
     showCustomMessage("Error al añadir al carrito", "error");
@@ -868,11 +878,12 @@ async function showMovieDetails(movieId) {
 
     // Rellenar contenido
     document.getElementById('details-title').textContent = movie.titulo;
-    document.getElementById('details-year-genre').textContent =
-      `${movie.anio} | ${(movie.generos || []).map(g => g.nombre).join(', ')}`;
+    const generos = (movie.generos || []).map(g => g.nombre).join(", ") || "Sin género";
+    document.getElementById("details-year-genre").textContent =
+      `${movie.anio} | ${generos}`;
     document.getElementById('details-rating').textContent =
-      movie.rating != null ? `⭐ ${movie.rating} / 10` : '';
-    document.getElementById('details-sinopsis').textContent = movie.sinopsis || '';
+      movie.rating != null ? `⭐ ${movie.rating} / 10` : '⭐ Sin valoración';
+    document.getElementById('details-sinopsis').textContent = movie.sinopsis || 'Sinopsis no disponible.';
 
     const modal = document.getElementById('movie-details-modal');
     const content = document.getElementById('movie-details-content');
@@ -922,14 +933,15 @@ function closeMovieDetails() {
 
 // --- Inicialización ---
 document.addEventListener('DOMContentLoaded', () => {
-  // Set up add genre button
+
+  //  AÑADIR NUEVOS GÉNEROS
   const addGenreBtn = document.getElementById('add-genre-btn');
   const newGenreInput = document.getElementById('new-genre');
-  
+
   if (addGenreBtn) {
     addGenreBtn.addEventListener('click', addGenre);
   }
-  
+
   if (newGenreInput) {
     newGenreInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
@@ -938,44 +950,44 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
-  
-  // Inicializar la UI
+
+  // Inicializar la UI (no logueado)
   updateUI(null, false);
 
-  // Configurar manejadores de eventos de autenticación
+  //  MANEJO LOGIN / REGISTER
   const openLoginBtn = document.getElementById('open-login-btn');
   const openRegisterBtn = document.getElementById('open-register-btn');
   const loginForm = document.getElementById('login-form');
   const registerForm = document.getElementById('register-form');
-  
+
   if (openLoginBtn) {
     openLoginBtn.addEventListener('click', () => openModal('login-modal'));
   }
-  
+
   if (openRegisterBtn) {
     openRegisterBtn.addEventListener('click', () => openModal('register-modal'));
   }
-  
+
   if (loginForm) {
     loginForm.addEventListener('submit', function(e) {
       e.preventDefault();
       handleLogin();
     });
   }
-  
+
   if (registerForm) {
     registerForm.addEventListener('submit', function(e) {
       e.preventDefault();
       handleRegister();
     });
   }
-  
+
   const logoutBtn = document.getElementById('logout-btn');
   if (logoutBtn) {
     logoutBtn.addEventListener('click', handleLogout);
   }
 
-  // Configurar formulario de películas
+  //  FORMULARIO DE PELÍCULAS
   const movieForm = document.getElementById('movie-form');
   if (movieForm) {
     movieForm.addEventListener('submit', handleMovieFormSubmit);
@@ -985,13 +997,65 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  //  CERRAR MODAL DE PELÍCULA
   const movieModal = document.getElementById('movie-details-modal');
-    if (movieModal) {
-      movieModal.addEventListener('click', (e) => {
-        const content = document.getElementById('movie-details-content');
-        if (content && !content.contains(e.target)) {
-          closeMovieDetails();
-        }
-      });
+  if (movieModal) {
+    movieModal.addEventListener('click', (e) => {
+      const content = document.getElementById('movie-details-content');
+      if (content && !content.contains(e.target)) {
+        closeMovieDetails();
+      }
+    });
+  }
+
+  //     BUSCADOR GLOBAL
+  const searchInput = document.getElementById("search-input");
+  const searchBtn   = document.getElementById("search-btn");
+
+  function searchMovie() {
+    const term = searchInput.value.toLowerCase().trim();
+    if (!term) return;
+
+    if (!Array.isArray(movies) || movies.length === 0) {
+      showCustomMessage("No hay películas cargadas.", "error");
+      return;
     }
+
+    // Buscar coincidencia
+    const movie = movies.find(m =>
+      m.titulo.toLowerCase().includes(term)
+    );
+
+    if (!movie) {
+      showCustomMessage("No se encontró ninguna película.", "error");
+      return;
+    }
+
+    // Scroll hacia la tarjeta
+    const card = document.querySelector(`[data-movie-id="${movie.id}"]`);
+    if (card) {
+      card.scrollIntoView({ behavior: "smooth", block: "center" });
+
+      card.classList.add("ring-4", "ring-red-600");
+      setTimeout(() => {
+        card.classList.remove("ring-4", "ring-red-600");
+      }, 1500);
+    }
+  }
+
+  // Click en botón
+  if (searchBtn) {
+    searchBtn.addEventListener("click", searchMovie);
+  }
+
+  // Enter en la caja de texto
+  if (searchInput) {
+    searchInput.addEventListener("keypress", e => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        searchMovie();
+      }
+    });
+  }
+
 });
