@@ -57,9 +57,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/peliculas/**").hasRole("ADMIN")
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
 
-                        // USER: carrito y pedidos
+                        // USER: carrito, pedidos y biblioteca
                         .requestMatchers("/api/v1/cart/**", "/api/v1/orders/**").hasRole("USER")
                         .requestMatchers("/api/v1/perfil/**").hasRole("USER")
+                        .requestMatchers("/api/v1/biblioteca/**").hasRole("USER")
 
 
                         // El resto requiere autenticación

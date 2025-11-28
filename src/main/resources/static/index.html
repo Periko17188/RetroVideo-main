@@ -243,6 +243,26 @@
       <p id="no-movies-message" class="hidden text-xl text-center mt-10">No hay películas que coincidan con el filtro.
       </p>
     </section>
+
+    <!-- SECCIÓN MI BIBLIOTECA (USER) -->
+    <section id="user-library-section" class="hidden mt-10">
+      <h2 class="text-3xl font-bold mb-6">Mi Biblioteca</h2>
+
+      <!-- Botón volver -->
+      <button onclick="closeUserLibrary()"
+              class="mb-6 bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition">
+        ← Volver al catálogo
+      </button>
+
+      <p id="library-empty-msg" class="hidden text-gray-300 text-lg">
+        Todavía no has comprado ninguna película.
+      </p>
+
+      <div id="library-container"
+           class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+      </div>
+    </section>
+
   </main>
 
   <!-- LOGIN MODAL -->

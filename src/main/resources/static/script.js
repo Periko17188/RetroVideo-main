@@ -1175,6 +1175,66 @@ async function openUserProfile() {
   }
 }
 
+async function openUserLibrary() {
+  const base64 = btoa(`${authUsername}:${authPassword}`);
+
+  const res = await fetch(`${API_URL}/biblioteca`, {
+    headers: { "Authorization": `Basic ${base64}` }
+  });
+
+  if (!res.ok) {
+    showCustomMessage("Error al cargar tu biblioteca", "error");
+    return;
+  }
+
+  const items = await res.json();
+
+  const section = document.getElementById("user-library-section");
+  const container = document.getElementById("library-container");
+  const msg = document.getElementById("library-empty-msg");
+
+  // Reset
+  container.innerHTML = "";
+
+  if (items.length === 0) {
+    msg.classList.remove("hidden");
+  } else {
+    msg.classList.add("hidden");
+  }
+
+  // Pintar carátulas
+  items.forEach(item => {
+    const card = document.createElement("div");
+    card.classList = "bg-gray-900 rounded-lg overflow-hidden shadow-md";
+
+    const img = item.urlImagen
+      ? `images/${item.urlImagen}`
+      : "images/placeholder.png";
+
+    card.innerHTML = `
+      <img src="${img}" class="w-full object-cover aspect-[2/3]" />
+      <div class="p-3">
+        <h4 class="font-bold truncate">${item.tituloPelicula}</h4>
+        <p class="text-sm text-gray-400">Comprada: ${item.cantidadComprada} veces</p>
+        <p class="text-xs text-gray-500">Última compra: ${item.ultimaFechaCompra.split("T")[0]}</p>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+
+  // Mostrar sección de biblioteca
+  document.getElementById("main-content").scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+
+  section.classList.remove("hidden");
+
+  // Ocultar catálogo mientras tanto
+  document.getElementById("movies-container").parentElement.classList.add("hidden");
+}
+
+
 async function saveProfile() {
   const email = document.getElementById("profile-email");
   const address = document.getElementById("profile-address");
@@ -1287,4 +1347,80 @@ document.addEventListener("click", (e) => {
         closeProfileModal();
     }
 });
+
+async function openUserLibrary() {
+  if (!authUsername || !authPassword) {
+    showCustomMessage("Debes iniciar sesión como usuario.", "error");
+    return;
+  }
+
+  const base64 = btoa(`${authUsername}:${authPassword}`);
+
+  try {
+    const res = await fetch(`${API_URL}/biblioteca`, {
+      headers: { "Authorization": `Basic ${base64}` }
+    });
+
+    if (!res.ok) {
+      showCustomMessage("Error al cargar tu biblioteca", "error");
+      return;
+    }
+
+    const items = await res.json();
+    console.log("Mi Biblioteca:", items);
+
+    // --- Mostrar sección Biblioteca ---
+    const librarySection = document.getElementById("user-library-section");
+    const libraryList = document.getElementById("library-container");
+    const catalog = document.getElementById("movies-container")?.parentElement;
+
+    librarySection.classList.remove("hidden");
+    if (catalog) catalog.classList.add("hidden");
+
+    // --- Renderizar contenido ---
+    libraryList.innerHTML = "";
+
+    if (items.length === 0) {
+      libraryList.innerHTML = `
+        <p class="text-center text-gray-400 col-span-full">
+          Todavía no has comprado ninguna película.
+        </p>
+      `;
+      return;
+    }
+
+    items.forEach(item => {
+      libraryList.innerHTML += `
+        <div class="bg-gray-900 p-4 rounded-lg shadow-md hover:shadow-xl transition">
+          <img src="images/${item.imagenUrl || 'placeholder.png'}"
+               class="w-full h-auto rounded mb-3"
+               onerror="this.src='images/placeholder.png'">
+
+          <h3 class="font-bold text-white">${item.titulo}</h3>
+
+          <p class="text-sm text-gray-400 mt-1">
+            Compradas: <span class="text-green-400 font-bold">${item.cantidadComprada}</span>
+          </p>
+
+          <p class="text-xs text-gray-500 mt-1">
+            Última compra: ${item.ultimaFechaCompra
+              ? item.ultimaFechaCompra.substring(0, 10)
+              : "Desconocida"}
+          </p>
+        </div>
+      `;
+    });
+
+  } catch (err) {
+    console.error(err);
+    showCustomMessage("Error de conexión al cargar la biblioteca", "error");
+  }
+}
+
+function closeUserLibrary() {
+  document.getElementById("user-library-section").classList.add("hidden");
+  document.getElementById("movies-container").parentElement.classList.remove("hidden");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
 
