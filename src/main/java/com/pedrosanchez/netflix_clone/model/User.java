@@ -35,9 +35,9 @@ public class User {
 
     private String email;
     private Integer birthYear; // año nacimiento
-    private String address;      // dirección completa
-    private String postalCode;   // CP
-    private String memberSince;  // fecha que mostraremos tipo "25/11/2025"
+    private String address; // dirección completa
+    private String postalCode; // CP
+    private String memberSince; // fecha que mostraremos tipo "25/11/2025"
 
     private Integer totalPurchases = 0;
     private Integer totalMovies = 0;
@@ -45,4 +45,8 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Order> orders = new ArrayList<>();
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_favorites", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "movie_id"))
+    private Set<Movie> favorites = new HashSet<>();
 }
