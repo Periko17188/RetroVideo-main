@@ -394,11 +394,11 @@ function createMovieCard(movie) {
     };
   }
 
-  // Estrella de favoritos (solo para USER, no ADMIN)
+  // Estrella de favoritos
   if (isAuthenticated && window.userRoles && !window.userRoles.includes('ROLE_ADMIN')) {
     const isFavorite = userFavorites.includes(movie.id);
     const star = document.createElement('button');
-    star.className = 'favorite-star absolute bottom-2 right-2 text-2xl hover:scale-110 transition-transform';
+    star.className = 'favorite-star absolute bottom-2 right-2 text-xl sm:text-2xl md:text-3xl hover:scale-110 transition-transform';
     star.textContent = isFavorite ? '★' : '☆';
     star.style.color = '#FFD700'; // amarillo
     star.style.background = 'none';
