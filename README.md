@@ -1,133 +1,149 @@
-# 🎬 Netflix Clone (Spring Boot + H2 + Spring Security)
+# 🎬 RetroVideo - Plataforma de Streaming Estilo Netflix
 
-Proyecto desarrollado con **Spring Boot** que simula una aplicación tipo **Netflix**, con gestión de usuarios, películas y géneros.  
-Incluye autenticación, carga inicial de datos y base de datos en memoria **H2** para desarrollo y pruebas.
+**RetroVideo** es una aplicación web completa desarrollada con **Spring Boot** que simula una plataforma de streaming tipo **Netflix**. Incluye gestión de usuarios, películas, géneros, carrito de compras, biblioteca personal, favoritos y panel de administración.
 
 ---
 
 ## 🧱 Estructura del Proyecto
 
-netflix-backend/
+```
+RetroVideo/
 │
-├── 📂 src
-│   ├── 📂 main
-│   │   ├── 📂 java/com/pedrosanchez/netflix_clone
-│   │   │   ├── 📂 config
-│   │   │   │   ├── DatabaseInitializer.java
-│   │   │   │   ├── SecurityConfig.java
-│   │   │   │   └── WebConfig.java
-│   │   │   │
-│   │   │   ├── 📂 controller
-│   │   │   │   ├── AdminController.java (*)
-│   │   │   │   ├── AuthController.java
-│   │   │   │   ├── CartController.java (*)
-│   │   │   │   ├── GenreController.java
-│   │   │   │   ├── MovieController.java
-│   │   │   │   └── OrderController.java (*)
-│   │   │   │
-│   │   │   ├── 📂 dto (*)
-│   │   │   │   ├── MovieRequestDTO.java
-│   │   │   │   └── UserRegisterDTO.java
-│   │   │   │
-│   │   │   ├── 📂 exception (*)
-│   │   │   │   ├── GlobalExceptionHandler.java
-│   │   │   │   └── NotFoundException.java
-│   │   │   │
-│   │   │   ├── 📂 model
-│   │   │   │   ├── CartItem.java (*)
-│   │   │   │   ├── Genre.java
-│   │   │   │   ├── Movie.java
-│   │   │   │   ├── Order.java (*)
-│   │   │   │   └── User.java
-│   │   │   │
-│   │   │   ├── 📂 repository
-│   │   │   │   ├── CartItemRepository.java (*)
-│   │   │   │   ├── GenreRepository.java
-│   │   │   │   ├── MovieRepository.java
-│   │   │   │   ├── OrderRepository.java (*)
-│   │   │   │   └── UserRepository.java
-│   │   │   │
-│   │   │   ├── 📂 service
-│   │   │   │   ├── AdminService.java (*)
-│   │   │   │   ├── AdminServiceImpl.java (*)
-│   │   │   │   ├── BackupScheduler.java (*)
-│   │   │   │   ├── CartService.java (*)
-│   │   │   │   ├── GenreService.java
-│   │   │   │   ├── JpaUserDetailsService.java
-│   │   │   │   ├── MovieService.java
-│   │   │   │   └── OrderService.java (*)
-│   │   │   │
-│   │   │   └── NetflixCloneApplication.java
-│   │   │
-│   │   └── 📂 resources
-│   │       ├── 📂 static
-│   │       │   ├── 📂 images (películas y placeholder)
-│   │       │   └── index.html
-│   │       └── application.properties
-
-(*) = Funcionalidades añadidas al proyecto base
+├── 📂 src/main/java/com/pedrosanchez/netflix_clone
 │   │
-│   └── 📂 test/java/com/pedrosanchez/netflix_clone
-│       └── NetflixCloneApplicationTests.java
+│   ├── 📂 config
+│   │   ├── DatabaseInitializer.java     # Inicialización de datos prueba
+│   │   ├── SecurityConfig.java          # Configuración de Spring Security
+│   │   └── WebConfig.java               # Configuración web (CORS, etc.)
+│   │
+│   ├── 📂 controller                    # Endpoints REST del backend
+│   │   ├── AdminController.java         # Gestión admin (usuarios, ventas)
+│   │   ├── AuthController.java          # Autenticación (login, registro)
+│   │   ├── BibliotecaController.java    # Biblioteca películas compradas
+│   │   ├── CartController.java          # Carrito de compras
+│   │   ├── FavoriteController.java      # Sistema de favoritos
+│   │   ├── GenreController.java         # CRUD de géneros
+│   │   ├── MovieController.java         # CRUD de películas
+│   │   ├── OrderController.java         # Gestión de pedidos/compras
+│   │   ├── UserController.java          # Gestión de usuarios
+│   │   └── UserProfileController.java   # Perfil de usuario
+│   │
+│   ├── 📂 dto                           # Data Transfer Objects
+│   │   ├── MovieRequestDTO.java
+│   │   ├── UserRegisterDTO.java
+│   │   └── [otros DTOs]
+│   │
+│   ├── 📂 exception                     # Manejo global de errores
+│   │   ├── GlobalExceptionHandler.java
+│   │   └── NotFoundException.java
+│   │
+│   ├── 📂 model                         # Entidades JPA
+│   │   ├── CartItem.java                 # Items del carrito
+│   │   ├── Genre.java                    # Géneros de películas
+│   │   ├── Movie.java                    # Películas
+│   │   ├── Order.java                    # Pedidos/compras
+│   │   └── User.java                     # Usuarios (con favoritos)
+│   │
+│   ├── 📂 repository                    # Repositorios JPA
+│   │   ├── CartItemRepository.java
+│   │   ├── GenreRepository.java
+│   │   ├── MovieRepository.java
+│   │   ├── OrderRepository.java
+│   │   └── UserRepository.java
+│   │
+│   ├── 📂 service                       # Lógica de negocio
+│   │   ├── AdminService.java
+│   │   ├── AdminServiceImpl.java
+│   │   ├── BackupScheduler.java          # Backup automático de BD
+│   │   ├── BibliotecaService.java
+│   │   ├── CartService.java
+│   │   ├── FavoriteService.java
+│   │   ├── FavoriteServiceImpl.java
+│   │   ├── GenreService.java
+│   │   ├── JpaUserDetailsService.java
+│   │   ├── MovieService.java
+│   │   └── OrderService.java
+│   │
+│   └── NetflixCloneApplication.java        # Clase principal
 │
-├── pom.xml
-├── mvnw
-├── mvnw.cmd
-├── HELP.md
-├── README.md
-├── .gitignore
-└── .gitattributes
-
-
----
-
-## 🎯 Funcionalidades del Proyecto
-
-### Gestión de Usuarios y Autenticación
-- ✅ Registro de nuevos usuarios con validación
-- ✅ Autenticación mediante HTTP Basic
-- ✅ Sistema de roles (USER / ADMIN)
-- ✅ Contraseñas encriptadas con BCrypt
-
-### Gestión de Películas
-- ✅ Listar todas las películas con sus géneros
-- ✅ Buscar películas por ID
-- ✅ Crear, editar y eliminar películas (solo ADMIN)
-- ✅ Valoraciones (rating) para cada película
-
-### Carrito de Compras
-- ✅ Añadir películas al carrito
-- ✅ Ver contenido del carrito
-- ✅ Eliminar películas del carrito
-- ✅ Actualizar cantidades
-- ✅ Verificar si una película está en el carrito
-
-### Sistema de Pedidos
-- ✅ Finalizar compra (checkout)
-- ✅ Historial de pedidos del usuario
-- ✅ Información detallada de cada pedido
-
-### Funcionalidades de Administración
-- ✅ Backup automático de base de datos (cada 15 minutos)
-- ✅ Backup manual mediante endpoint REST
-- ✅ Protección de endpoints administrativos con rol ADMIN
-
-### Gestión de Errores
-- ✅ Manejo global de excepciones
-- ✅ Respuestas HTTP consistentes
-- ✅ Mensajes de error personalizados
+├── 📂 src/main/resources
+│   ├── 📂 static
+│   │   ├── 📂 images                      # Imágenes de películas
+│   │   ├── index.html                      # Frontend de la aplicación
+│   │   ├── script.js                       # Lógica JavaScript
+│   │   └── styles.css                      # Estilos CSS
+│   └── application.properties              # Configuración de Spring Boot
+│
+├── 📂 data                                 # Base de datos H2 persistente
+├── 📂 logs                                 # Logs de la aplicación
+├── pom.xml                                 # Configuración de Maven
+├── mvnw & mvnw.cmd                         # Maven Wrapper
+└── README.md                               
+```
 
 ---
 
-## ⚙️ Configuración del Proyecto
+## 🎯 Funcionalidades Principales
 
-El archivo `application.properties` define los parámetros principales:
+### 👤 Para Usuarios (ROLE_USER)
+
+#### Autenticación y Perfil
+- ✅ **Registro e inicio de sesión** con contraseñas encriptadas (BCrypt)
+- ✅ **Perfil de usuario** editable (nombre, email, contraseña)
+- ✅ **Eliminación de cuenta** con confirmación
+
+#### Catálogo de Películas
+- ✅ **Explorar películas** con portadas, descripciones y ratings
+- ✅ **Filtrar por género** de forma dinámica
+- ✅ **Buscador de películas**
+- ✅ **Sistema de favoritos** (marcar/desmarcar con estrella)
+- ✅ **Vista de favoritos** dedicada
+
+#### Compras y Biblioteca
+- ✅ **Carrito de compras** con dropdown visual
+- ✅ **Agregar/eliminar películas** del carrito
+- ✅ **Finalizar compra** (checkout)
+- ✅ **Mi Biblioteca** - acceso a películas compradas
+- ✅ **Historial de pedidos**
+
+---
+
+### 👨‍💼 Para Administradores (ROLE_ADMIN)
+
+#### Gestión de Contenido
+- ✅ **Crear, editar y eliminar películas**
+- ✅ **Crear géneros**
+- ✅ **Subir imágenes** de portadas
+
+#### Panel de Administración
+- ✅ **Backup automático** de base de datos (cada 15 min)
+- ✅ **Backup manual** mediante endpoint REST
+
+#### Seguridad
+- ✅ **Protección de endpoints** con Spring Security
+- ✅ **Control de acceso basado en roles**
+- ✅ **Validación de permisos** en frontend y backend
+
+---
+
+## ⚙️ Configuración y Tecnologías
+
+### Tecnologías Utilizadas
+- **Backend**: Spring Boot 3.5.6, Spring Data JPA, Spring Security
+- **Base de datos**: H2 Database (persistente en archivo)
+- **Frontend**: HTML5, CSS3, JavaScript (Vanilla)
+- **Autenticación**: HTTP Basic Authentication
+- **Encriptación**: BCrypt
+- **Lenguaje**: Java 17
+- **Build Tool**: Maven
+
+### Configuración (`application.properties`)
 
 ```properties
 spring.application.name=netflix-clone
 server.port=8080
 
-# Base de datos H2 en archivo (persistente)
+# Base de datos H2 persistente
 spring.datasource.url=jdbc:h2:file:./data/pedflixdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
 spring.datasource.driverClassName=org.h2.Driver
 spring.datasource.username=sa
@@ -145,48 +161,111 @@ spring.jpa.properties.hibernate.format_sql=true
 spring.jpa.defer-datasource-initialization=true
 ```
 
+---
 
-🚀 Ejecución del Proyecto
+## 🚀 Instalación y Ejecución
 
-1. Clona el repositorio o descarga el proyecto.
+### Requisitos Previos
+- Java 17
+- Maven
 
-2. Abre una terminal en la raíz del proyecto.
+### Pasos para Ejecutar
 
-3. Ejecuta el comando:
+1. **Clonar el repositorio**
+   ```bash
+   git clone [url-del-repositorio]
+   cd RetroVideo
+   ```
 
-./mvnw spring-boot:run
+2. **Ejecutar la aplicación**
+   
+   En **Linux/Mac**:
+   ```bash
+   ./mvnw spring-boot:run
+   ```
+   
+   En **Windows**:
+   ```cmd
+   mvnw.cmd spring-boot:run
+   ```
 
+3. **Acceder a la aplicación**
+   - 🌐 **Aplicación web**: https://localhost:8443
+   - 🗄️ **Consola H2**: https://localhost:8443/h2-console
+     - **JDBC URL**: `jdbc:h2:file:./data/pedflixdb`
+     - **Usuario**: `sa`
+     - **Contraseña**: *(dejar en blanco)*
 
-o en Windows:
+---
 
-mvnw.cmd spring-boot:run
+##  Usuarios de Prueba
 
+La aplicación crea automáticamente al Admin al iniciar:
 
-4. Accede a la aplicación en:
-👉 http://localhost:8080
+| Usuario | Contraseña | Rol | Descripción |
+|---------|-----------|-----|-------------|
+| `Pedro` | `1234` | ADMIN | Administrador con acceso completo |
 
-5. (Opcional) Accede a la consola H2 en:
-👉 http://localhost:8080/h2-console
+---
 
-Usa la URL: jdbc:h2:file:./data/pedflixdb
+## 🎨 Características de la Interfaz
 
+- 🎨 **Diseño moderno** inspirado en Netflix
+- 📱 **Responsive design** adaptable a diferentes dispositivos
+- 🌙 **Tema oscuro** por defecto
+- ✨ **Animaciones suaves** y transiciones
+- 🔍 **Búsqueda en tiempo real**
+- 🛒 **Carrito desplegable** con vista rápida
+- ⭐ **Sistema de favoritos visual** con iconos de estrella
+- 📚 **Secciones dedicadas** (Biblioteca, Favoritos, Perfil)
 
-👤 Autor
+---
 
-Pedro Sánchez
- Desarrollador Web Full Stack en formación
- Proyecto educativo con fines de aprendizaje y práctica de Spring Boot, JPA, y Seguridad.
+## 🔐 Seguridad
 
-🧩 Tecnologías Utilizadas
+- 🔒 **HTTPS obligatorio** - Todas las comunicaciones cifradas (TLS/SSL)
+- 🔐 **Certificado SSL** configurado (puerto 8443)
+- 🔑 **Autenticación HTTP Basic** para todos los endpoints
+- 🛡️ **Control de acceso basado en roles** (RBAC)
+- � **Contraseñas hasheadas** con BCrypt
+- ✅ **Validación de entrada** con Spring Validation
+- 🚫 **Protección CSRF** deshabilitada para APIs REST
+- 🌐 **CORS configurado** para desarrollo
 
-Java 17
+---
 
-Spring Boot 3.5.6
+## 📦 Endpoints REST Principales
 
-Spring Data JPA
+### Autenticación
+- `POST /api/auth/register` - Registrar nuevo usuario
+- `POST /api/auth/login` - Validar credenciales
 
-Spring Security
+### Películas
+- `GET /api/movies` - Listar todas las películas
+- `GET /api/movies/{id}` - Obtener película por ID
+- `POST /api/movies` - Crear película (ADMIN)
+- `PUT /api/movies/{id}` - Actualizar película (ADMIN)
+- `DELETE /api/movies/{id}` - Eliminar película (ADMIN)
 
-H2 Database (en memoria)
+### Carrito
+- `GET /api/cart` - Ver carrito del usuario
+- `POST /api/cart/add/{movieId}` - Agregar película
+- `DELETE /api/cart/remove/{movieId}` - Eliminar película
+- `POST /api/cart/checkout` - Finalizar compra
 
-Maven
+### Favoritos
+- `GET /api/favorites` - Listar favoritos del usuario
+- `POST /api/favorites/add/{movieId}` - Agregar a favoritos
+- `DELETE /api/favorites/remove/{movieId}` - Quitar de favoritos
+- `GET /api/favorites/check/{movieId}` - Verificar si está en favoritos
+
+### Biblioteca
+- `GET /api/biblioteca` - Ver películas compradas
+
+---
+
+## 👨‍💻 Autor
+
+**Pedro Sánchez**  
+Desarrollador Web Full Stack en formación
+Proyecto educativo enfocado en Spring Boot, JPA, Spring Security.
