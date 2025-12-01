@@ -1,6 +1,6 @@
-# 🎬 RetroVideo - Plataforma de Streaming Estilo Netflix
+# 🎬 RetroVideo - Plataforma de Venta de Películas Físicas
 
-**RetroVideo** es una aplicación web completa desarrollada con **Spring Boot** que simula una plataforma de streaming tipo **Netflix**. Incluye gestión de usuarios, películas, géneros, carrito de compras, biblioteca personal, favoritos y panel de administración.
+**RetroVideo** es una aplicación web completa desarrollada con **Spring Boot** que simula una plataforma de venta de películas. Incluye gestión de usuarios, películas, géneros, carrito de compras, biblioteca personal, favoritos y panel de administración.
 
 ---
 
