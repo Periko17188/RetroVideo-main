@@ -22,7 +22,7 @@ public class BackupScheduler {
 
 
     // Programa la generación de copias de seguridad cada 15 minutos
-    @Scheduled(cron = "0 */15 * * * *")
+    @Scheduled(cron = "0 */5 * * * *")
     public void scheduleBackup() {
         try {
             // Crear directorio si no existe

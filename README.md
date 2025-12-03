@@ -116,7 +116,7 @@ RetroVideo/
 - ✅ Subir imágenes de portadas
 
 #### Panel de Administración
-- ✅ Backup automático de base de datos (cada 15 min)
+- ✅ Backup automático de base de datos (cada 5 min)
 - ✅ Backup manual mediante endpoint REST
 
 #### Seguridad
@@ -141,7 +141,7 @@ RetroVideo/
 
 spring.application.name=netflix-clone
 
-spring.datasource.url=jdbc:h2:file:./data/pedflixdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+spring.datasource.url=jdbc:h2:file:./data/retrovideodb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
 spring.datasource.driverClassName=org.h2.Driver
 spring.datasource.username=sa
 spring.datasource.password=
@@ -179,7 +179,7 @@ server.ssl.key-alias=retrovideo
 
 1. Clonar el repositorio
 
-   - git clone https://github.com/tu-repo/retrovideo.git
+   - git clone https://github.com/Periko17188/Pedflix
    - cd retrovideo
 
 
@@ -196,7 +196,7 @@ server.ssl.key-alias=retrovideo
    - Aplicación web: https://localhost:8443
    
    - Consola H2: https://localhost:8443/h2-console
-     - JDBC URL: `jdbc:h2:file:./data/pedflixdb`
+     - JDBC URL: `jdbc:h2:file:./data/retrovideodb`
      - Usuario: `sa`
      - Contraseña: (dejar en blanco)
 
