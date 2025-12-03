@@ -1,6 +1,6 @@
-# 🎬 RetroVideo - Plataforma de Venta de Películas Físicas
+# 🎬 RetroVideo - Plataforma de Streaming Estilo Netflix
 
-**RetroVideo** es una aplicación web completa desarrollada con **Spring Boot** que simula una plataforma de venta de películas. Incluye gestión de usuarios, películas, géneros, carrito de compras, biblioteca personal, favoritos y panel de administración.
+RetroVideo es una aplicación web completa desarrollada con Spring Boot que simula una plataforma de streaming tipo Netflix. Incluye gestión de usuarios, películas, géneros, carrito de compras, biblioteca personal, favoritos y panel de administración.
 
 ---
 
@@ -88,113 +88,117 @@ RetroVideo/
 ### 👤 Para Usuarios (ROLE_USER)
 
 #### Autenticación y Perfil
-- ✅ **Registro e inicio de sesión** con contraseñas encriptadas (BCrypt)
-- ✅ **Perfil de usuario** editable (nombre, email, contraseña)
-- ✅ **Eliminación de cuenta** con confirmación
+- ✅ Registro e inicio de sesión con contraseñas encriptadas (BCrypt)
+- ✅ Perfil de usuario editable (nombre, email, contraseña)
+- ✅ Eliminación de cuenta con confirmación
 
 #### Catálogo de Películas
-- ✅ **Explorar películas** con portadas, descripciones y ratings
-- ✅ **Filtrar por género** de forma dinámica
-- ✅ **Buscador de películas**
-- ✅ **Sistema de favoritos** (marcar/desmarcar con estrella)
-- ✅ **Vista de favoritos** dedicada
+- ✅ Explorar películas con portadas, descripciones y ratings
+- ✅ Filtrar por género de forma dinámica
+- ✅ Buscador de películas
+- ✅ Sistema de favoritos (marcar/desmarcar con estrella)
+- ✅ Vista de favoritos dedicada
 
 #### Compras y Biblioteca
-- ✅ **Carrito de compras** con dropdown visual
-- ✅ **Agregar/eliminar películas** del carrito
-- ✅ **Finalizar compra** (checkout)
-- ✅ **Mi Biblioteca** - acceso a películas compradas
-- ✅ **Historial de pedidos**
+- ✅ Carrito de compras con dropdown visual
+- ✅ Agregar/eliminar películas del carrito
+- ✅ Finalizar compra (checkout)
+- ✅ Mi Biblioteca - acceso a películas compradas
+- ✅ Historial de pedidos
 
 ---
 
 ### 👨‍💼 Para Administradores (ROLE_ADMIN)
 
 #### Gestión de Contenido
-- ✅ **Crear, editar y eliminar películas**
-- ✅ **Crear géneros**
-- ✅ **Subir imágenes** de portadas
+- ✅ Crear, editar y eliminar películas
+- ✅ Crear géneros
+- ✅ Subir imágenes de portadas
 
 #### Panel de Administración
-- ✅ **Backup automático** de base de datos (cada 15 min)
-- ✅ **Backup manual** mediante endpoint REST
+- ✅ Backup automático de base de datos (cada 15 min)
+- ✅ Backup manual mediante endpoint REST
 
 #### Seguridad
-- ✅ **Protección de endpoints** con Spring Security
-- ✅ **Control de acceso basado en roles**
-- ✅ **Validación de permisos** en frontend y backend
+- ✅ Protección de endpoints con Spring Security
+- ✅ Control de acceso basado en roles
+- ✅ Validación de permisos en frontend y backend
 
 ---
 
 ## ⚙️ Configuración y Tecnologías
 
 ### Tecnologías Utilizadas
-- **Backend**: Spring Boot 3.5.6, Spring Data JPA, Spring Security
-- **Base de datos**: H2 Database (persistente en archivo)
-- **Frontend**: HTML5, CSS3, JavaScript (Vanilla)
-- **Autenticación**: HTTP Basic Authentication
-- **Encriptación**: BCrypt
-- **Lenguaje**: Java 17
-- **Build Tool**: Maven
+- Backend: Spring Boot 3.5.6, Spring Data JPA, Spring Security
+- Base de datos: H2 Database
+- Frontend: HTML5, CSS3, JavaScript (Vanilla)
+- Autenticación: HTTP Basic Authentication
+- Encriptación: BCrypt
+- Lenguaje: Java 17
+- Build Tool: Maven
 
 ### Configuración (`application.properties`)
 
-```properties
 spring.application.name=netflix-clone
-server.port=8080
 
-# Base de datos H2 persistente
 spring.datasource.url=jdbc:h2:file:./data/pedflixdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
 spring.datasource.driverClassName=org.h2.Driver
 spring.datasource.username=sa
 spring.datasource.password=
 
-# Consola web de H2
-spring.h2.console.enabled=true
-spring.h2.console.path=/h2-console
-
-# Configuración JPA/Hibernate
 spring.jpa.hibernate.ddl-auto=create
 spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.H2Dialect
 spring.jpa.properties.hibernate.format_sql=true
+
+spring.h2.console.enabled=true
+spring.h2.console.path=/h2-console
+
 spring.jpa.defer-datasource-initialization=true
-```
+
+server.http.port=8080
+
+server.port=8443
+server.ssl.enabled=true
+server.ssl.key-store=classpath:retrovideo.p12
+server.ssl.key-store-password=12341234
+server.ssl.key-store-type=PKCS12
+server.ssl.key-alias=retrovideo
 
 ---
 
 ## 🚀 Instalación y Ejecución
 
-### Requisitos Previos
+## Requisitos Previos
 - Java 17
-- Maven
+- Maven 3.8
+- Git (Clonar repositorio)
+- Navegador Web
 
-### Pasos para Ejecutar
+## Pasos para Ejecutar
 
-1. **Clonar el repositorio**
-   ```bash
-   git clone [url-del-repositorio]
-   cd RetroVideo
-   ```
+1. Clonar el repositorio
 
-2. **Ejecutar la aplicación**
+   - git clone https://github.com/tu-repo/retrovideo.git
+   - cd retrovideo
+
+
+2. Construir el proyecto
    
-   En **Linux/Mac**:
-   ```bash
-   ./mvnw spring-boot:run
-   ```
-   
-   En **Windows**:
-   ```cmd
-   mvnw.cmd spring-boot:run
-   ```
+   - mvn clean install
 
-3. **Acceder a la aplicación**
-   - 🌐 **Aplicación web**: https://localhost:8443
-   - 🗄️ **Consola H2**: https://localhost:8443/h2-console
-     - **JDBC URL**: `jdbc:h2:file:./data/pedflixdb`
-     - **Usuario**: `sa`
-     - **Contraseña**: *(dejar en blanco)*
+3. Ejecutar la aplicación
+
+   - mvn spring-boot:run
+
+4. Acceder a la aplicación
+
+   - Aplicación web: https://localhost:8443
+   
+   - Consola H2: https://localhost:8443/h2-console
+     - JDBC URL: `jdbc:h2:file:./data/pedflixdb`
+     - Usuario: `sa`
+     - Contraseña: (dejar en blanco)
 
 ---
 
@@ -203,64 +207,84 @@ spring.jpa.defer-datasource-initialization=true
 La aplicación crea automáticamente al Admin al iniciar:
 
 | Usuario | Contraseña | Rol | Descripción |
-|---------|-----------|-----|-------------|
-| `Pedro` | `1234` | ADMIN | Administrador con acceso completo |
+|---------|------------|-----|-------------|
+| `Pedro` |  `1234`    |Admin|Administrador|
 
 ---
 
 ## 🎨 Características de la Interfaz
 
-- 🎨 **Diseño moderno** inspirado en Netflix
-- 📱 **Responsive design** adaptable a diferentes dispositivos
-- 🌙 **Tema oscuro** por defecto
-- ✨ **Animaciones suaves** y transiciones
-- 🔍 **Búsqueda en tiempo real**
-- 🛒 **Carrito desplegable** con vista rápida
-- ⭐ **Sistema de favoritos visual** con iconos de estrella
-- 📚 **Secciones dedicadas** (Biblioteca, Favoritos, Perfil)
+- 🎨  Diseño moderno inspirado en Netflix
+- 📱  Responsive design adaptable a diferentes dispositivos
+- 🌙  Tema oscuro por defecto
+- ✨  Animaciones suaves y transiciones
+- 🔍  Búsqueda en tiempo real
+- 🛒  Carrito desplegable con vista rápida
+- ⭐  Sistema de favoritos visual con iconos de estrella
+- 📚  Secciones dedicadas (Biblioteca, Favoritos, Perfil)
 
 ---
 
 ## 🔐 Seguridad
 
-- 🔒 **HTTPS obligatorio** - Todas las comunicaciones cifradas (TLS/SSL)
-- 🔐 **Certificado SSL** configurado (puerto 8443)
-- 🔑 **Autenticación HTTP Basic** para todos los endpoints
-- 🛡️ **Control de acceso basado en roles** (RBAC)
-- � **Contraseñas hasheadas** con BCrypt
-- ✅ **Validación de entrada** con Spring Validation
-- 🚫 **Protección CSRF** deshabilitada para APIs REST
-- 🌐 **CORS configurado** para desarrollo
+- 🔒 HTTPS obligatorio - Todas las comunicaciones cifradas (TLS/SSL)
+- 🔐 Certificado SSL configurado (puerto 8443)
+- 🔑 Autenticación HTTP Basic para todos los endpoints
+- 🛡️ Control de acceso basado en roles (RBAC)
+- �  Contraseñas hasheadas con BCrypt
+- ✅ Validación de entrada con Spring Validation
+- 🚫 Protección CSRF deshabilitada para APIs REST
+- 🌐 CORS configurado para desarrollo
 
 ---
 
-## 📦 Endpoints REST Principales
+## 📦 Endpoints REST
 
-### Autenticación
-- `POST /api/auth/register` - Registrar nuevo usuario
-- `POST /api/auth/login` - Validar credenciales
+## OrderController:
+- POST /api/v1/orders/checkout - Finalizar compra del carrito
+- GET /api/v1/orders - Obtener historial de pedidos del usuario
 
-### Películas
-- `GET /api/movies` - Listar todas las películas
-- `GET /api/movies/{id}` - Obtener película por ID
-- `POST /api/movies` - Crear película (ADMIN)
-- `PUT /api/movies/{id}` - Actualizar película (ADMIN)
-- `DELETE /api/movies/{id}` - Eliminar película (ADMIN)
+## CartController:
+- GET /api/v1/cart - Obtener contenido del carrito
+- POST /api/v1/cart/add/{movieId} - Añadir ítem al carrito
+- GET /api/v1/cart/contains/{movieId} - Obtiene carrito usuario
+- PUT /api/v1/cart//{id}/quantity - Actualizar cantidad en el carrito
+- DELETE /api/v1/cart/{id} - Eliminar ítem del carrito
 
-### Carrito
-- `GET /api/cart` - Ver carrito del usuario
-- `POST /api/cart/add/{movieId}` - Agregar película
-- `DELETE /api/cart/remove/{movieId}` - Eliminar película
-- `POST /api/cart/checkout` - Finalizar compra
+## MovieController:
+- GET /api/v1/peliculas - Obtener todas las películas
+- GET /api/v1/peliculas/{id} - Obtener película por ID
+- POST /api/v1/peliculas - Crear nueva película (Admin)
+- PUT /api/v1/peliculas/{id} - Actualizar película (Admin)
+- DELETE /api/v1/peliculas/{id} - Eliminar película (Admin)
 
-### Favoritos
-- `GET /api/favorites` - Listar favoritos del usuario
-- `POST /api/favorites/add/{movieId}` - Agregar a favoritos
-- `DELETE /api/favorites/remove/{movieId}` - Quitar de favoritos
-- `GET /api/favorites/check/{movieId}` - Verificar si está en favoritos
+## GenreController:
+- GET /api/v1/generos - Obtener todos los géneros
+- POST /api/v1/generos - Obtener género por ID
 
-### Biblioteca
-- `GET /api/biblioteca` - Ver películas compradas
+## FavoriteController:
+- GET /api/v1/favoritos - Obtener películas favoritas
+- POST /api/v1/favoritos/{movieId} - Añadir a favoritos
+- GET /api/v1/favoritos/mis-favoritos - Obtener películas favoritas
+- DELETE /api/v1/favoritos/{movieId} - Eliminar de favoritos
+
+## AuthController:
+- POST /api/v1/registro - Registrar nuevo usuario
+- GET /api/v1/me - Obtener información del usuario actual
+
+## UserProfileController:
+- GET /api/v1/perfil/me - Obtener perfil del usuario
+- PUT /api/v1/perfil/me - Actualizar perfil
+
+## BibliotecaController:
+- GET /api/v1/biblioteca - Obtener biblioteca de películas compradas
+
+## AdminController:
+- POST /api/v1/admin/backup - Generar copia de seguridad
+
+## UserController:
+- DELETE /api/v1/usuarios - Eliminar usuario (Admin)
+
 
 ---
 
