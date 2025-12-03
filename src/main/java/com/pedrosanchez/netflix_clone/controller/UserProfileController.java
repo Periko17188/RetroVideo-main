@@ -57,6 +57,11 @@ public class UserProfileController {
             errors.put("email", "Formato de email inválido (ej: usuario@correo.com)");
         }
 
+        int currentYear = java.time.LocalDate.now().getYear();
+        if (dto.getBirthYear() != null && dto.getBirthYear() > currentYear) {
+            errors.put("birthYear", "El año no puede ser mayor que el año actual (" + currentYear + ")");
+        }
+
         // Si hay errores → devolverlos
         if (!errors.isEmpty()) {
             return ResponseEntity.badRequest().body(errors);
@@ -81,7 +86,6 @@ public class UserProfileController {
         private String email;
 
         @Min(value = 1900, message = "Año mínimo 1900")
-        @Max(value = 2300, message = "Año máximo 2300")
         private Integer birthYear;
 
         private String address;

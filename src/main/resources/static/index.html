@@ -145,10 +145,13 @@
 
         <div class="md:col-span-1">
           <label for="anio" class="block text-sm font-medium mb-1">Año (ej: 2025):</label>
-          <input type="number" id="anio" name="anio" required min="1895" max="2500" oninput="validateYear(this)"
+          <input type="number" id="anio" name="anio" required min="1895" oninput="validateYear(this)"
             class="w-full p-2 rounded bg-gray-700 border border-gray-600 text-white">
           <p id="year-error" class="text-red-400 text-xs mt-1 hidden">El año debe 4 dígitos</p>
         </div>
+        <script>
+          document.getElementById("anio").max = new Date().getFullYear();
+        </script>
 
         <div class="md:col-span-2">
           <label for="sinopsis" class="block text-sm font-medium mb-1">Sinopsis (Max 1000 chars):</label>

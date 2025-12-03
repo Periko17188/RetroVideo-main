@@ -947,7 +947,7 @@ function validateYear(input) {
   if ((year.length !== 4)) {
     input.classList.add('border-red-500');
     errorElement.classList.remove('hidden');
-    input.setCustomValidity('El año debe tener entre 3 y 4 dígitos');
+    input.setCustomValidity('El año debe tener entre 4 dígitos');
   } else {
     input.classList.remove('border-red-500');
     errorElement.classList.add('hidden');
