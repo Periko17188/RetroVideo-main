@@ -688,14 +688,14 @@ function updateCartUI() {
                 <div class="flex items-center">
                     <!-- Grupo de botones de cantidad -->
                     <div class="flex items-center space-x-1">
-                        <button onclick="updateCartItemQuantity(${item.id}, ${(item.quantity || 1) - 1})" 
+                        <button onclick="updateCartItemQuantity(${item.id}, ${(item.quantity || 1) - 1})"
                                 class="px-2 py-1 bg-gray-600 rounded hover:bg-gray-500">-</button>
                         <span class="w-8 text-center">${item.quantity || 1}</span>
-                        <button onclick="updateCartItemQuantity(${item.id}, ${(item.quantity || 1) + 1})" 
+                        <button onclick="updateCartItemQuantity(${item.id}, ${(item.quantity || 1) + 1})"
                                 class="px-2 py-1 bg-gray-600 rounded hover:bg-gray-500">+</button>
                     </div>
                     <!-- Botón de eliminar con margen izquierdo -->
-                    <button onclick="removeFromCart(${item.id})" 
+                    <button onclick="removeFromCart(${item.id})"
                             class="ml-3 px-3 py-1 bg-red-600 text-white rounded hover:bg-red-500">
                         ×
                     </button>
@@ -947,7 +947,7 @@ function validateYear(input) {
   if ((year.length !== 4)) {
     input.classList.add('border-red-500');
     errorElement.classList.remove('hidden');
-    input.setCustomValidity('El año debe tener entre 4 dígitos');
+    input.setCustomValidity('El año debe tener entre 3 y 4 dígitos');
   } else {
     input.classList.remove('border-red-500');
     errorElement.classList.add('hidden');
@@ -1215,6 +1215,12 @@ async function openUserProfile() {
   }
 }
 
+function hideUserSections() {
+  document.getElementById("user-library-section")?.classList.add("hidden");
+  document.getElementById("user-favorites-section")?.classList.add("hidden");
+  document.getElementById("profile-modal")?.classList.add("hidden");
+}
+
 async function openUserLibrary() {
   const base64 = btoa(`${authUsername}:${authPassword}`);
 
@@ -1321,7 +1327,7 @@ async function saveProfile() {
 
     closeProfileModal();
 
-    // 🔥 Volver arriba a las carátulas
+    // Volver arriba a las carátulas
     document.getElementById("main-content").scrollIntoView({
       behavior: "smooth",
       block: "start"
@@ -1394,6 +1400,8 @@ async function openUserLibrary() {
     return;
   }
 
+  hideUserSections();
+
   const base64 = btoa(`${authUsername}:${authPassword}`);
 
   try {
@@ -1458,8 +1466,11 @@ async function openUserLibrary() {
 }
 
 function closeUserLibrary() {
-  document.getElementById("user-library-section").classList.add("hidden");
-  document.getElementById("movies-container").parentElement.classList.remove("hidden");
+  hideUserSections();
+
+  const catalogSection = document.getElementById("movies-container")?.parentElement;
+  if (catalogSection) catalogSection.classList.remove("hidden");
+
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
@@ -1525,6 +1536,8 @@ async function openUserFavorites() {
     return;
   }
 
+  hideUserSections();
+
   const base64 = btoa(`${authUsername}:${authPassword}`);
 
   try {
@@ -1567,7 +1580,7 @@ async function openUserFavorites() {
         : 'images/placeholder.png';
 
       card.innerHTML = `
-        <img src="${img}" 
+        <img src="${img}"
              class="w-full object-cover aspect-[2/3] cursor-pointer"
              onclick="showMovieDetails(${item.id})"
              onerror="this.src='images/placeholder.png'">
@@ -1637,16 +1650,14 @@ async function removeFavoriteFromView(movieId, cardElement) {
 
 // Cerrar sección "Mis Favoritos"
 function closeUserFavorites() {
-  const favSection = document.getElementById('user-favorites-section');
-  const catalogSection = document.getElementById('movies-container')?.parentElement;
+  hideUserSections();
 
-  if (favSection) favSection.classList.add('hidden');
-  if (catalogSection) catalogSection.classList.remove('hidden');
+  const catalogSection = document.getElementById("movies-container")?.parentElement;
+  if (catalogSection) catalogSection.classList.remove("hidden");
 
-  // Actualizar estrellas del catálogo al volver
   updateStarsInCatalog();
 
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 // Actualizar estrellas en el catálogo
@@ -1657,4 +1668,3 @@ function updateStarsInCatalog() {
     star.textContent = isFavorite ? '★' : '☆';
   });
 }
-
