@@ -12,37 +12,40 @@ RetroVideo/
 ├── 📂 src/main/java/com/pedrosanchez/netflix_clone
 │   │
 │   ├── 📂 config
-│   │   ├── DatabaseInitializer.java     # Inicialización de datos prueba
-│   │   ├── SecurityConfig.java          # Configuración de Spring Security
-│   │   └── WebConfig.java               # Configuración web (CORS, etc.)
+│   │   ├── DatabaseInitializer.java       
+|   |   |── HttpToHttpsRedirectConfig.java
+│   │   ├── SecurityConfig.java            
+│   │   └── WebConfig.java                  
 │   │
-│   ├── 📂 controller                    # Endpoints REST del backend
-│   │   ├── AdminController.java         # Gestión admin (usuarios, ventas)
-│   │   ├── AuthController.java          # Autenticación (login, registro)
-│   │   ├── BibliotecaController.java    # Biblioteca películas compradas
-│   │   ├── CartController.java          # Carrito de compras
-│   │   ├── FavoriteController.java      # Sistema de favoritos
-│   │   ├── GenreController.java         # CRUD de géneros
-│   │   ├── MovieController.java         # CRUD de películas
-│   │   ├── OrderController.java         # Gestión de pedidos/compras
-│   │   ├── UserController.java          # Gestión de usuarios
-│   │   └── UserProfileController.java   # Perfil de usuario
+│   ├── 📂 controller                       # Endpoints REST del backend
+│   │   ├── AdminController.java           
+│   │   ├── AuthController.java             
+│   │   ├── BibliotecaController.java       
+│   │   ├── CartController.java             
+│   │   ├── FavoriteController.java        
+│   │   ├── GenreController.java          
+│   │   ├── MovieController.java          
+│   │   ├── OrderController.java            
+│   │   ├── UserController.java            
+│   │   └── UserProfileController.java     
 │   │
-│   ├── 📂 dto                           # Data Transfer Objects
+│   ├── 📂 dto                              # Data Transfer Objects
+|   |   |── FavoriteDTO.java
+|   |   |── ItemBibliotecaDTO.java
 │   │   ├── MovieRequestDTO.java
 │   │   ├── UserRegisterDTO.java
-│   │   └── [otros DTOs]
+│   │   └── VentasStatsDTO.java
 │   │
-│   ├── 📂 exception                     # Manejo global de errores
+│   ├── 📂 exception                        # Manejo global de errores
 │   │   ├── GlobalExceptionHandler.java
 │   │   └── NotFoundException.java
 │   │
-│   ├── 📂 model                         # Entidades JPA
-│   │   ├── CartItem.java                 # Items del carrito
-│   │   ├── Genre.java                    # Géneros de películas
-│   │   ├── Movie.java                    # Películas
-│   │   ├── Order.java                    # Pedidos/compras
-│   │   └── User.java                     # Usuarios (con favoritos)
+│   ├── 📂 model                             # Entidades JPA
+│   │   ├── CartItem.java                   
+│   │   ├── Genre.java                       
+│   │   ├── Movie.java                       
+│   │   ├── Order.java                   
+│   │   └── User.java                     
 │   │
 │   ├── 📂 repository                    # Repositorios JPA
 │   │   ├── CartItemRepository.java
@@ -54,7 +57,7 @@ RetroVideo/
 │   ├── 📂 service                       # Lógica de negocio
 │   │   ├── AdminService.java
 │   │   ├── AdminServiceImpl.java
-│   │   ├── BackupScheduler.java          # Backup automático de BD
+│   │   ├── BackupScheduler.java          
 │   │   ├── BibliotecaService.java
 │   │   ├── CartService.java
 │   │   ├── FavoriteService.java
@@ -68,8 +71,8 @@ RetroVideo/
 │
 ├── 📂 src/main/resources
 │   ├── 📂 static
-│   │   ├── 📂 images                      # Imágenes de películas
-│   │   ├── index.html                      # Frontend de la aplicación
+│   │   ├── 📂 images                     
+│   │   ├── index.html                      # Frontend
 │   │   ├── script.js                       # Lógica JavaScript
 │   │   └── styles.css                      # Estilos CSS
 │   └── application.properties              # Configuración de Spring Boot
