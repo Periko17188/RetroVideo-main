@@ -13,6 +13,7 @@ public class BibliotecaService {
 
     private final OrderRepository orderRepository;
 
+    // Devuelvo la biblioteca del usuario
     public List<ItemBibliotecaDTO> getBibliotecaPorUsuario(Long userId) {
         return orderRepository.findLibraryByUserId(userId);
     }

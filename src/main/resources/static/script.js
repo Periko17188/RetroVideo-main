@@ -9,12 +9,12 @@ let authPassword = null;
 let currentEditId = null;
 
 // Carrito (solo para USER)
-let cart = []; // {id, titulo}
+let cart = [];
 
 // Favoritos (solo para USER)
-let userFavorites = []; // Array de IDs de películas favoritas
+let userFavorites = [];
 
-// --- Modales ---
+// Modales
 function openModal(id) {
   const el = document.getElementById(id);
   el.classList.remove('hidden'); el.classList.add('flex');
@@ -27,8 +27,14 @@ function closeModal(id) {
   if (id === 'movie-form-section') resetMovieForm();
 }
 
-// --- UI según sesión ---
+// UI según sesión
 function updateUI(user, logged = false, roles = []) {
+  document.getElementById('admin-stats-section')?.classList.add('hidden'); // Ocultar ventas
+  document.getElementById('user-favorites-section')?.classList.add('hidden'); // Ocultar favoritos
+  document.getElementById('user-library-section')?.classList.add('hidden');
+  document.getElementById('movies-container')?.parentElement.classList.remove('hidden'); // Mostrar catálogo
+  document.getElementById('genres-container')?.parentElement.classList.remove('hidden'); // Mostrar filtros
+
   const openLogin = document.getElementById('open-login-btn');
   const openRegister = document.getElementById('open-register-btn');
   const logoutBtn = document.getElementById('logout-btn');
@@ -38,51 +44,63 @@ function updateUI(user, logged = false, roles = []) {
   const main = document.getElementById('main-content');
   const cartContainer = document.getElementById('cart-container');
 
+  const adminMenuContainer = document.getElementById('admin-menu-container');
+  const userMenuContainer = document.getElementById('user-menu-container');
+
   isAuthenticated = logged;
   authUsername = user || null;
   window.userRoles = roles || [];
 
   if (logged) {
-
     const isAdmin = roles.includes("ROLE_ADMIN");
 
-    // Mostrar menú para USER
-    if (!isAdmin) {
-      document.getElementById("user-menu-container")?.classList.remove("hidden");
+    // GESTIÓN DE MENÚS (User vs Admin)
+    if (isAdmin) {
+      // SI ES ADMIN: Mostrar menú Admin y Ocultar menú User
+      if(adminMenuContainer) adminMenuContainer.classList.remove("hidden");
+      if(userMenuContainer) userMenuContainer.classList.add("hidden");
+
+      // Actualizar nombre en menú Admin
+      const adminDisplay = document.getElementById('admin-display');
+      if(adminDisplay) adminDisplay.textContent = `Bienvenid@ ${user}`;
+
     } else {
-      document.getElementById("user-menu-container")?.classList.add("hidden");
+      // SI ES USER: Mostrar menú User y Ocultar menú Admin
+      if(adminMenuContainer) adminMenuContainer.classList.add("hidden");
+      if(userMenuContainer) userMenuContainer.classList.remove("hidden");
     }
 
-    // Mostrar buscador
+    // BUSCADOR Y CARRITO
     document.getElementById("search-bar")?.classList.remove("hidden");
-
-    // Limpiar el buscador al iniciar sesión
     const searchInput = document.getElementById("search-input");
     if (searchInput) searchInput.value = "";
 
-    // Carrito SOLO para USER
+    // El carrito solo se muestra si NO es admin
     document.getElementById("cart-container")?.classList.toggle("hidden", isAdmin);
 
+    // 3. PANTALLAS PRINCIPALES
     splash.classList.add('hidden');
     main.classList.remove('hidden');
     openLogin.classList.add('hidden');
     openRegister.classList.add('hidden');
-    logoutBtn.classList.remove('hidden');
-    logoutBtn.classList.toggle('hidden', !isAdmin);
+
+    // El botón "Cerrar sesión" antiguo lo ocultamos si es Admin (porque ya lo tiene en su menú)
+    // Si es User, lo mostramos SOLO si no tiene menú desplegable (por seguridad),
+    // pero como tu user ya tiene menú, lo mejor es ocultarlo siempre para limpiar la interfaz.
+    logoutBtn.classList.add('hidden');
 
     userDisplay.textContent = `Bienvenid@, ${user}`;
     userDisplay.classList.remove('hidden');
 
-    // ADMIN: mostrar panel admin
+    // PANELES DE ADMINISTRACIÓN
     movieFormSection?.classList.toggle('hidden', !isAdmin);
+    // Si comentaste el botón antiguo de backup, esto evita errores
     document.getElementById('admin-controls')?.classList.toggle('hidden', !isAdmin);
 
   } else {
-
-    // Ocultar menú user
-    document.getElementById("user-menu-container")?.classList.add("hidden");
-
-    // Ocultar buscador
+    // ESTADO: NO LOGUEADO (Invitado)
+    if(adminMenuContainer) adminMenuContainer.classList.add("hidden");
+    if(userMenuContainer) userMenuContainer.classList.add("hidden");
     document.getElementById("search-bar")?.classList.add("hidden");
 
     splash.classList.remove('hidden');
@@ -92,17 +110,14 @@ function updateUI(user, logged = false, roles = []) {
     logoutBtn.classList.add('hidden');
     userDisplay.classList.add('hidden');
     movieFormSection?.classList.add('hidden');
-
-    // Ocultar carrito siempre si no hay sesión
     document.getElementById('cart-container')?.classList.add('hidden');
   }
-
 }
 
 function handleLogout() {
   authUsername = null; authPassword = null;
   cart = []; updateCartUI();
-  userFavorites = []; // Limpiar favoritos
+  userFavorites = [];
   updateUI(null, false);
   showCustomMessage('Has cerrado sesión correctamente.', 'success');
 }
@@ -146,7 +161,7 @@ async function deleteUserAccount() {
   }
 }
 
-// --- Login / Registro ---
+// Login / Registro
 async function handleLogin() {
   const username = document.getElementById('login-username').value;
   const password = document.getElementById('login-password').value;
@@ -156,7 +171,7 @@ async function handleLogin() {
   const base64 = btoa(`${username}:${password}`);
 
   try {
-    // 1. Verificar credenciales con un endpoint público
+    // Verificar credenciales con un endpoint público
     const res = await fetch(`${API_URL}/peliculas`, {
       headers: { 'Authorization': `Basic ${base64}` }
     });
@@ -169,11 +184,11 @@ async function handleLogin() {
       return;
     }
 
-    // 2. Guardamos credenciales
+    // Guardamos credenciales
     authUsername = username;
     authPassword = password;
 
-    // 3. Obtener roles reales desde el backend
+    // Obtener roles reales desde el backend
     const meRes = await fetch(`${API_URL}/me`, {
       headers: { 'Authorization': `Basic ${base64}` }
     });
@@ -190,14 +205,14 @@ async function handleLogin() {
     // Guardar roles globalmente
     window.userRoles = roles;
 
-    // 4. Actualizar UI con roles reales
+    // Actualizar UI con roles reales
     updateUI(username, true, roles);
 
     closeModal('login-modal');
     await fetchGenres();
     await fetchMovies();
 
-    // 5. Cargar favoritos solo para usuarios (no admin)
+    // Cargar favoritos solo para usuarios (no admin)
     if (!roles.includes('ROLE_ADMIN')) {
       await loadFavorites();
     }
@@ -241,7 +256,7 @@ async function handleRegister() {
   }
 }
 
-// --- Form Admin ---
+// Form Admin
 function resetMovieForm() {
   const form = document.getElementById('movie-form');
   form.reset();
@@ -315,7 +330,7 @@ async function handleMovieFormSubmit(e) {
   }
 }
 
-// --- Mensajes superiores (confirmaciones) ---
+// Mensajes superiores (confirmaciones)
 function showCustomMessage(text, type = 'info') {
   let box = document.getElementById('custom-message-box');
   if (!box) {
@@ -330,7 +345,7 @@ function showCustomMessage(text, type = 'info') {
   setTimeout(() => { box.style.opacity = '0'; }, 3000);
 }
 
-// --- Películas y Géneros ---
+// Películas y Géneros
 function createMovieCard(movie) {
   const card = document.createElement('div');
   card.className = 'movie-card bg-gray-900 rounded-lg overflow-hidden relative';
@@ -409,7 +424,7 @@ function createMovieCard(movie) {
     star.dataset.movieId = movie.id;
 
     star.onclick = async (e) => {
-      e.stopPropagation(); // evitar abrir modal de detalles
+      e.stopPropagation();
       await toggleFavorite(movie.id, star);
     };
 
@@ -474,11 +489,11 @@ async function addGenre() {
   const genreName = newGenreInput.value.trim();
   const messageElement = document.getElementById('genre-message');
 
-  // Reset message
+  // Restablecer mensaje
   messageElement.textContent = '';
   messageElement.className = 'text-sm mt-1 hidden';
 
-  // Validation
+  // Validación
   if (!genreName) {
     messageElement.textContent = 'El nombre del género no puede estar vacío';
     messageElement.classList.remove('hidden', 'text-green-400');
@@ -493,7 +508,7 @@ async function addGenre() {
     return;
   }
 
-  // Check if genre already exists
+  // Comprobar si el género ya existe
   const genreExists = genres.some(g => g.nombre.toLowerCase() === genreName.toLowerCase());
   if (genreExists) {
     messageElement.textContent = 'Este género ya existe';
@@ -521,31 +536,31 @@ async function addGenre() {
 
     const newGenre = await response.json();
 
-    // Add to local genres array
+    // Añadir a la gama de géneros
     genres.push(newGenre);
 
-    // Update genre select dropdown
+    // Actualizar el menú desplegable de selección de género
     const select = document.querySelector('#genre-select-container select');
     if (select) {
       const option = document.createElement('option');
       option.value = newGenre.id;
       option.textContent = newGenre.nombre;
       select.appendChild(option);
-      select.value = newGenre.id; // Select the newly added genre
+      select.value = newGenre.id;
     }
 
-    // Update genres filter buttons
+    // Actualizar los botones de filtro de géneros
     const genresContainer = document.getElementById('genres-container');
     if (genresContainer) {
       genresContainer.appendChild(createGenreButton(newGenre));
     }
 
-    // Show success message
+    // Mostrar mensaje de éxito
     messageElement.textContent = `Género "${genreName}" añadido correctamente`;
     messageElement.classList.remove('hidden', 'text-red-400', 'text-yellow-400');
     messageElement.classList.add('text-green-400');
 
-    // Clear input
+    // Borrar entrada
     newGenreInput.value = '';
 
   } catch (error) {
@@ -610,7 +625,7 @@ async function fetchMovies() {
   } catch (e) { handleFetchError(e, 'películas'); }
 }
 
-// --- Admin: editar / borrar ---
+// Admin: editar / borrar
 function populateEditForm(movie) {
   const form = document.getElementById('movie-form');
   form.titulo.value = movie.titulo; form.anio.value = movie.anio; form.sinopsis.value = movie.sinopsis; form.rating.value = movie.rating;
@@ -624,20 +639,42 @@ function populateEditForm(movie) {
 
 async function handleDeleteMovie(id, title) {
   if (!confirm(`¿Eliminar "${title}"?`)) return;
-  if (!isAuthenticated || !authUsername || !authPassword) { showCustomMessage('Debes iniciar sesión como ADMIN.', 'error'); return; }
+
+  if (!isAuthenticated || !authUsername || !authPassword) {
+      showCustomMessage('Debes iniciar sesión como ADMIN.', 'error');
+      return;
+  }
+
   const base64 = btoa(`${authUsername}:${authPassword}`);
+
   try {
     const res = await fetch(`${API_URL}/peliculas/${id}`, {
-      method: 'DELETE', headers:
-        { 'Authorization': `Basic ${base64}` }, credentials: 'include'
+      method: 'DELETE',
+      headers: { 'Authorization': `Basic ${base64}` },
+      credentials: 'include'
     });
-    if (res.status === 204) { showCustomMessage(`"${title}" eliminada.`, 'success'); await fetchMovies(); }
-    else if (res.status === 401 || res.status === 403) { showCustomMessage('No tienes permisos de ADMIN.', 'error'); }
-    else { showCustomMessage(`Error ${res.status} al eliminar.`, 'error'); }
-  } catch (e) { showCustomMessage('Error de conexión.', 'error'); }
+
+    if (res.status === 204) {
+        // 204 No Content = Borrado exitoso
+        showCustomMessage(`"${title}" eliminada.`, 'success');
+        await fetchMovies();
+    }
+    else if (res.status === 409) {
+        const mensajeError = await res.text();
+        showCustomMessage(mensajeError, 'error');
+    }
+    else if (res.status === 401 || res.status === 403) {
+        showCustomMessage('No tienes permisos de ADMIN.', 'error');
+    }
+    else {
+        showCustomMessage(`Error ${res.status} al eliminar.`, 'error');
+    }
+  } catch (e) {
+      showCustomMessage('Error de conexión.', 'error');
+  }
 }
 
-// ========== CARRITO ==========
+// CARRITO
 // Añadir película al carrito y actualizar botón
 async function handleBuy(movie, btn) {
   const base64 = btoa(`${authUsername}:${authPassword}`);
@@ -735,7 +772,7 @@ async function updateCartItemQuantity(itemId, newQuantity) {
 function syncBuyButtonsWithCart() {
   // Si el carrito viene del backend: item.movie.id
   const idsEnCarrito = new Set(
-    cart.map(item => item.movie ? item.movie.id : item.id) // por si aún usas formato antiguo
+    cart.map(item => item.movie ? item.movie.id : item.id)
   );
 
   document.querySelectorAll('.buy-btn').forEach(btn => {
@@ -750,7 +787,6 @@ function syncBuyButtonsWithCart() {
     }
   });
 }
-
 
 // Eliminar del carrito por índice y refrescar badge/lista
 async function removeFromCart(cartItemId) {
@@ -818,23 +854,11 @@ async function loadCartFromBackend() {
   });
 
   if (res.ok) {
-    cart = await res.json();   // carrito real
+    cart = await res.json();
     updateCartUI();
-    syncBuyButtonsWithCart();  // ⬅ sincroniza botones
+    syncBuyButtonsWithCart();
   }
 }
-
-// Toggle del desplegable del carrito
-document.addEventListener('click', (ev) => {
-  const cartContainer = document.getElementById('cart-container');
-  const dd = document.getElementById('cart-dropdown');
-  const btn = document.getElementById('cart-btn');
-  if (btn && btn.contains(ev.target)) {
-    dd.style.display = (dd.style.display === 'block' ? 'none' : 'block');
-  } else if (cartContainer && !cartContainer.contains(ev.target)) {
-    dd.style.display = 'none';
-  }
-});
 
 // Event Listeners
 document.addEventListener('click', (e) => {
@@ -845,69 +869,6 @@ document.addEventListener('click', (e) => {
     }
   }
 });
-
-// Backup button click handler
-document.getElementById('backup-btn').addEventListener('click', handleBackup);
-
-// --- Backup Functionality ---
-async function handleBackup() {
-  const backupBtn = document.getElementById('backup-btn');
-  const backupSpinner = document.getElementById('backup-spinner');
-  const originalText = backupBtn.innerHTML;
-
-  if (!isAuthenticated || !authUsername || !authPassword) {
-    showCustomMessage('Debes iniciar sesión como administrador para realizar copias de seguridad.', 'error');
-    return;
-  }
-
-  try {
-    // Disable button and show spinner
-    backupBtn.disabled = true;
-    backupSpinner.classList.remove('hidden');
-    backupBtn.querySelector('span').textContent = 'Procesando...';
-
-    const base64 = btoa(`${authUsername}:${authPassword}`);
-    const response = await fetch(`${API_URL}/admin/backup`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Basic ${base64}`
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error(`Error ${response.status}: ${response.statusText}`);
-    }
-
-    // Get filename from Content-Disposition header
-    const contentDisposition = response.headers.get('Content-Disposition');
-    const filename = contentDisposition
-      ? contentDisposition.split('filename=')[1].replace(/"/g, '')
-      : `backup_${new Date().toISOString().split('T')[0]}.zip`;
-
-    // Create blob from response and trigger download
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-
-    // Cleanup
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(a);
-
-    showCustomMessage('Copia de seguridad generada con éxito', 'success');
-  } catch (error) {
-    console.error('Backup error:', error);
-    showCustomMessage(`Error al generar la copia de seguridad: ${error.message}`, 'error');
-  } finally {
-    // Re-enable button and restore original state
-    backupBtn.disabled = false;
-    backupSpinner.classList.add('hidden');
-    backupBtn.querySelector('span').textContent = 'Generar Copia de Seguridad';
-  }
-}
 
 // Función para actualizar la vista previa de la imagen
 function updateImagePreview(input) {
@@ -1014,7 +975,7 @@ function closeMovieDetails() {
   }, 200);
 }
 
-// --- Inicialización ---
+// Inicialización
 document.addEventListener('DOMContentLoaded', () => {
 
   //  AÑADIR NUEVOS GÉNEROS
@@ -1144,7 +1105,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 });
-// --- MENÚ DE USUARIO ---
+// MENÚ DE USUARIO
 const userMenuBtn = document.getElementById("user-menu-btn");
 const userMenuDropdown = document.getElementById("user-menu-dropdown");
 const userMenuContainer = document.getElementById("user-menu-container");
@@ -1417,7 +1378,7 @@ async function openUserLibrary() {
     const items = await res.json();
     console.log("Mi Biblioteca:", items);
 
-    // --- Mostrar sección Biblioteca ---
+    // Mostrar sección Biblioteca
     const librarySection = document.getElementById("user-library-section");
     const libraryList = document.getElementById("library-container");
     const catalog = document.getElementById("movies-container")?.parentElement;
@@ -1425,7 +1386,7 @@ async function openUserLibrary() {
     librarySection.classList.remove("hidden");
     if (catalog) catalog.classList.add("hidden");
 
-    // --- Renderizar contenido ---
+    // Renderizar contenido
     libraryList.innerHTML = "";
 
     if (items.length === 0) {
@@ -1474,8 +1435,7 @@ function closeUserLibrary() {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-
-// ========== FAVORITOS ==========
+// FAVORITOS
 
 // Cargar IDs de favoritos del usuario
 async function loadFavorites() {
@@ -1488,8 +1448,8 @@ async function loadFavorites() {
     });
 
     if (res.ok) {
-      userFavorites = await res.json(); // array de IDs
-      updateStarsInCatalog(); // Actualizar estrellas existentes
+      userFavorites = await res.json();
+      updateStarsInCatalog();
     }
   } catch (e) {
     console.error('Error loading favorites:', e);
@@ -1667,4 +1627,203 @@ function updateStarsInCatalog() {
     const isFavorite = userFavorites.includes(movieId);
     star.textContent = isFavorite ? '★' : '☆';
   });
+}
+
+// EVENTOS GLOBALES Y LÓGICA
+
+// 1. Toggle del desplegable del carrito
+document.addEventListener('click', (ev) => {
+  const cartContainer = document.getElementById('cart-container');
+  const dd = document.getElementById('cart-dropdown');
+  const btn = document.getElementById('cart-btn');
+
+  if (btn && btn.contains(ev.target)) {
+    dd.style.display = (dd.style.display === 'block' ? 'none' : 'block');
+  } else if (cartContainer && !cartContainer.contains(ev.target)) {
+    dd.style.display = 'none';
+  }
+});
+
+// 2. Click en Película (Abrir detalles)
+document.addEventListener('click', (e) => {
+  if (e.target.matches('.movie-card-img')) {
+    const card = e.target.closest('.movie-card');
+    if (card && card.dataset.movieId) {
+      // Verificamos si existe la función de detalles
+      if (typeof showMovieDetails === 'function') {
+        showMovieDetails(card.dataset.movieId);
+      } else {
+        console.log("Falta la función showMovieDetails. ID clicado:", card.dataset.movieId);
+      }
+    }
+  }
+});
+
+// LÓGICA: MENÚ ADMIN, BACKUP Y VENTAS
+
+// Backup Functionality
+async function handleBackup() {
+  if (!isAuthenticated || !authUsername || !authPassword) {
+    showCustomMessage('Debes iniciar sesión como administrador.', 'error');
+    return;
+  }
+
+  showCustomMessage('⏳ Generando copia de seguridad... Espere.', 'info');
+
+  try {
+    const base64 = btoa(`${authUsername}:${authPassword}`);
+    const response = await fetch(`${API_URL}/admin/backup`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Basic ${base64}`
+      }
+    });
+
+    if (!response.ok) throw new Error(`Error ${response.status}`);
+
+    // Lógica de descarga
+    const contentDisposition = response.headers.get('Content-Disposition');
+    const filename = contentDisposition
+      ? contentDisposition.split('filename=')[1].replace(/"/g, '')
+      : `backup_${new Date().toISOString().split('T')[0]}.zip`;
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+
+    showCustomMessage('✅ Copia descargada correctamente.', 'success');
+
+  } catch (error) {
+    console.error('Backup error:', error);
+    showCustomMessage('❌ Error al generar la copia.', 'error');
+  }
+}
+
+// Lógica del Menú Desplegable Admin
+
+// 1. Toggle del Menú (Abrir/Cerrar)
+document.addEventListener('click', (e) => {
+    const adminBtn = document.getElementById('admin-menu-btn');
+    const adminDropdown = document.getElementById('admin-menu-dropdown');
+
+    // Si clicamos en el botón del admin
+    if (adminBtn && adminBtn.contains(e.target)) {
+        adminDropdown.classList.toggle('hidden');
+    }
+    // Si clicamos fuera, cerrar
+    else if (adminDropdown && !adminDropdown.classList.contains('hidden') && !adminDropdown.contains(e.target)) {
+        adminDropdown.classList.add('hidden');
+    }
+});
+
+// 2. Event Listeners para las opciones del menú Admin
+const btnBackupMenu = document.getElementById('btn-admin-backup-menu');
+if (btnBackupMenu) {
+    btnBackupMenu.addEventListener('click', (e) => {
+        e.preventDefault();
+        handleBackup();
+        document.getElementById('admin-menu-dropdown').classList.add('hidden');
+    });
+}
+
+const btnSalesMenu = document.getElementById('btn-admin-sales');
+if (btnSalesMenu) {
+    btnSalesMenu.addEventListener('click', (e) => {
+        e.preventDefault();
+        openAdminStats();
+        document.getElementById('admin-menu-dropdown').classList.add('hidden');
+    });
+}
+
+// Lógica de la Pantalla de Ventas
+async function openAdminStats() {
+    // Ocultar catálogo y formulario
+    document.getElementById('movies-container').parentElement.classList.add('hidden');
+    document.getElementById('genres-container').parentElement.classList.add('hidden');
+    document.getElementById('movie-form-section').classList.add('hidden');
+
+    // Mostrar sección estadísticas
+    const statsSection = document.getElementById('admin-stats-section');
+    statsSection.classList.remove('hidden');
+
+    try {
+        const base64 = btoa(`${authUsername}:${authPassword}`);
+        const res = await fetch(`${API_URL}/admin/ventas`, {
+             headers: { 'Authorization': `Basic ${base64}` }
+        });
+
+        if(res.ok) {
+            const data = await res.json();
+            renderStats(data);
+        } else {
+            console.warn("Usando datos simulados para ventas");
+            renderStats({
+                totalIngresos: 0,
+                cantidadVentas: 0,
+                historial: []
+            });
+        }
+    } catch (e) {
+        showCustomMessage("Error obteniendo datos de ventas", "error");
+    }
+}
+
+function renderStats(data) {
+    // 1. Rellenar tarjetas (Dinero y Cantidad)
+    const totalMoney = document.getElementById('stats-total-money');
+    const totalSales = document.getElementById('stats-total-sales');
+
+    if(totalMoney) totalMoney.textContent = (data.totalIngresos || 0).toFixed(2) + ' €';
+    if(totalSales) totalSales.textContent = data.cantidadVentas || 0;
+
+    // 2. Rellenar tabla
+    const tbody = document.getElementById('stats-table-body');
+    if(!tbody) return;
+
+    tbody.innerHTML = '';
+
+    const lista = data.historial || [];
+
+    // Si no hay ventas
+    if(lista.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-gray-500">No hay ventas registradas</td></tr>';
+        return;
+    }
+
+    // Ordenar visualmente por ID descendente
+    lista.sort((a, b) => b.id - a.id);
+
+    lista.forEach(order => {
+        // 1. Usamos 'orderDate' (como en Java) en vez de 'date'
+        const fechaString = order.orderDate ? new Date(order.orderDate).toLocaleDateString() : 'N/A';
+
+        // 2. Protegemos el nombre de usuario por si viene null
+        const nombreUsuario = (order.user && order.user.username) ? order.user.username : 'Usuario Desconocido';
+
+        const row = `
+            <tr class="hover:bg-gray-700 transition border-b border-gray-700">
+                <td class="p-4 font-mono text-yellow-500">#${order.id}</td>
+                <td class="p-4 text-gray-300">${fechaString}</td>
+                <td class="p-4 text-white font-semibold">${nombreUsuario}</td>
+                <td class="p-4 font-bold text-green-400">${order.totalAmount.toFixed(2)} €</td>
+            </tr>
+        `;
+        tbody.innerHTML += row;
+    });
+}
+
+function closeAdminStats() {
+    // Ocultar stats
+    document.getElementById('admin-stats-section').classList.add('hidden');
+
+    // Mostrar todo lo demás
+    document.getElementById('movies-container').parentElement.classList.remove('hidden');
+    document.getElementById('genres-container').parentElement.classList.remove('hidden');
+    document.getElementById('movie-form-section').classList.remove('hidden');
 }

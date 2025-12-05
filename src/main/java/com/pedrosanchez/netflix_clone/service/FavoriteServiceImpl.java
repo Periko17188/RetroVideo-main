@@ -20,6 +20,7 @@ public class FavoriteServiceImpl implements FavoriteService {
     private final UserRepository userRepository;
     private final MovieRepository movieRepository;
 
+    // Devuelvo los favoritos del usuario como DTO
     @Override
     @Transactional(readOnly = true)
     public List<FavoriteDTO> getFavoritosPorUsuario(Long userId) {
@@ -39,6 +40,7 @@ public class FavoriteServiceImpl implements FavoriteService {
                 .collect(Collectors.toList());
     }
 
+    // Añadir o quitar una peli de favoritos
     @Override
     @Transactional
     public void toggleFavorito(Long userId, Long movieId) {
@@ -61,6 +63,7 @@ public class FavoriteServiceImpl implements FavoriteService {
         userRepository.save(user);
     }
 
+    // Solo devuelvo los IDs de las pelis favoritas del usuario
     @Override
     @Transactional(readOnly = true)
     public List<Long> getFavoritoIds(Long userId) {

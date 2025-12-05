@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
+// DTO usado para registrar un nuevo usuario
 @Getter
 @Setter
 public class UserRegisterDTO {

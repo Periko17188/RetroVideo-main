@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class HttpToHttpsRedirectConfig {
 
+    // Configuro Tomcat para aceptar HTTP y redirigirlo a HTTPS
     @Bean
     public ServletWebServerFactory servletContainer() {
         TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory();
@@ -16,13 +17,14 @@ public class HttpToHttpsRedirectConfig {
         return tomcat;
     }
 
+    // Conector HTTP - redirección a puerto HTTPS
     @Bean
     public Connector httpConnector() {
         Connector connector = new Connector(TomcatServletWebServerFactory.DEFAULT_PROTOCOL);
         connector.setScheme("http");
-        connector.setPort(8080);        // HTTP
+        connector.setPort(8080);
         connector.setSecure(false);
-        connector.setRedirectPort(8443); // HTTPS
+        connector.setRedirectPort(8443);
         return connector;
     }
 }

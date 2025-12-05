@@ -7,6 +7,7 @@ import com.pedrosanchez.netflix_clone.model.Movie;
 import com.pedrosanchez.netflix_clone.repository.GenreRepository;
 import com.pedrosanchez.netflix_clone.service.MovieService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -95,13 +96,19 @@ public class MovieController {
 
     // Elimina una película por ID
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteMovie(@PathVariable Long id) {
+    public ResponseEntity<?> deleteMovie(@PathVariable Long id) {
 
         if (!movieService.findById(id).isPresent()) {
             throw new NotFoundException("No existe la película con ID: " + id);
         }
 
-        movieService.deleteById(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        try {
+            movieService.deleteById(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (DataIntegrityViolationException e) {
+            // Si entra aquí, es porque la película está comprada o en un carrito
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("No se puede eliminar esta película porque forma parte del historial de compras de un usuario.");
+        }
     }
 }

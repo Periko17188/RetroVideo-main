@@ -34,10 +34,10 @@ public class User {
     private Set<String> roles = new HashSet<>();
 
     private String email;
-    private Integer birthYear; // año nacimiento
-    private String address; // dirección completa
-    private String postalCode; // CP
-    private String memberSince; // fecha que mostraremos tipo "25/11/2025"
+    private Integer birthYear;
+    private String address;
+    private String postalCode;
+    private String memberSince;
 
     private Integer totalPurchases = 0;
     private Integer totalMovies = 0;

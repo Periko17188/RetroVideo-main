@@ -21,7 +21,7 @@ public class BackupScheduler {
     private static final String BACKUP_BASE_PATH = "C:\\Users\\perik\\Desktop\\RetroVideo-main\\backup";
 
 
-    // Programa la generación de copias de seguridad cada 15 minutos
+    // Programa la generación de copias de seguridad cada 5 minutos
     @Scheduled(cron = "0 */5 * * * *")
     public void scheduleBackup() {
         try {

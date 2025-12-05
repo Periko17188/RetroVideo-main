@@ -51,7 +51,7 @@ public class AuthController {
     }
 
 
-    // NUEVO ENDPOINT: DEVOLVER USUARIO ACTUAL + ROLES
+    // DEVOLVER USUARIO ACTUAL + ROLES
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentUser(Authentication auth) {
 

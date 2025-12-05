@@ -15,10 +15,11 @@ public class UserController {
 
     private final UserRepository userRepository;
 
-    // DELETE /api/v1/usuarios/me
+    // El usuario autenticado se elimina a sí mismo
     @DeleteMapping("/me")
     public ResponseEntity<?> deleteCurrentUser(Authentication authentication) {
 
+        // Si no hay sesión, no permito continuar
         if (authentication == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No autenticado");
         }
@@ -27,6 +28,7 @@ public class UserController {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
+        // Elimino el usuario
         userRepository.delete(user);
 
         return ResponseEntity.ok().body("Usuario eliminado con éxito");

@@ -179,7 +179,7 @@ server.ssl.key-alias=retrovideo
 
 1. Clonar el repositorio
 
-   - git clone https://github.com/Periko17188/Pedflix
+   - git clone https://github.com/Periko17188/RetroVideo-main
    - cd retrovideo
 
 

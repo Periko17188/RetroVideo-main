@@ -28,7 +28,7 @@ public class OrderService {
     @Transactional
     public Order createOrder(User user, List<Movie> movies) {
 
-        // Los Movie que llegan NO incluyen quantity → NO los usamos directamente
+        // Los Movie que llegan NO incluyen quantity
         List<CartItem> cartItems = cartService.getCartItems(user);
 
         if (cartItems.isEmpty()) {
@@ -72,7 +72,7 @@ public class OrderService {
             // Guardar la orden completa
             Order savedOrder = orderRepository.save(order);
 
-            // ACTUALIZAR ESTADÍSTICAS DEL USUARIO
+            // Actualizar estadísticas del usuario
             int moviesPurchased = moviesToSave.size();
 
             Integer currentPurchases = user.getTotalPurchases() != null ? user.getTotalPurchases() : 0;

@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import java.util.List;
 
+// DTO para crear o actualizar una película desde el frontend
 @Getter
 @Setter
 public class MovieRequestDTO {
