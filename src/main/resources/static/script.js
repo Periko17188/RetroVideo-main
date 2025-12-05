@@ -555,11 +555,6 @@ async function addGenre() {
       genresContainer.appendChild(createGenreButton(newGenre));
     }
 
-    // Mostrar mensaje de éxito
-    messageElement.textContent = `Género "${genreName}" añadido correctamente`;
-    messageElement.classList.remove('hidden', 'text-red-400', 'text-yellow-400');
-    messageElement.classList.add('text-green-400');
-
     // Borrar entrada
     newGenreInput.value = '';
 
