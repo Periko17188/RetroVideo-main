@@ -29,6 +29,9 @@ function closeModal(id) {
 
 // UI según sesión
 function updateUI(user, logged = false, roles = []) {
+
+// Forzar que siempre vuelva arriba al cambiar de sesión
+  window.scrollTo({ top: 0, behavior: "auto" });
   document.getElementById('admin-stats-section')?.classList.add('hidden'); // Ocultar ventas
   document.getElementById('user-favorites-section')?.classList.add('hidden'); // Ocultar favoritos
   document.getElementById('user-library-section')?.classList.add('hidden');
@@ -153,7 +156,7 @@ async function deleteUserAccount() {
       updateUI(null, false);
 
     } else {
-      showCustomMessage("Error al eliminar la cuenta.", "error");
+      showCustomMessage("No puedes eliminar el usuario, tienes películas en tu carrito", "error");
     }
 
   } catch (e) {
@@ -1381,6 +1384,8 @@ async function openUserLibrary() {
     librarySection.classList.remove("hidden");
     if (catalog) catalog.classList.add("hidden");
 
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
     // Renderizar contenido
     libraryList.innerHTML = "";
 
@@ -1515,6 +1520,8 @@ async function openUserFavorites() {
 
     favoritesSection.classList.remove('hidden');
     if (catalog) catalog.classList.add('hidden');
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
 
     // Renderizar contenido
     favoritesList.innerHTML = '';
@@ -1746,6 +1753,8 @@ async function openAdminStats() {
     // Mostrar sección estadísticas
     const statsSection = document.getElementById('admin-stats-section');
     statsSection.classList.remove('hidden');
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
 
     try {
         const base64 = btoa(`${authUsername}:${authPassword}`);

@@ -54,7 +54,6 @@ public class DatabaseInitializer implements CommandLineRunner {
             // Actualizar roles
             user.getRoles().clear();
             user.getRoles().add("ROLE_ADMIN");
-            user.getRoles().add("ROLE_USER");
 
             userRepository.save(user);
             System.out.println("Usuario admin actualizado: Pedro");
@@ -63,7 +62,6 @@ public class DatabaseInitializer implements CommandLineRunner {
             // Crear nuevo administrador
             User admin = new User("Pedro", encodedPassword);
             admin.getRoles().add("ROLE_ADMIN");
-            admin.getRoles().add("ROLE_USER");
 
             userRepository.save(admin);
             System.out.println("Usuario admin creado: Pedro");

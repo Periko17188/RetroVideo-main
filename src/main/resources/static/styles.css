@@ -24,3 +24,34 @@ body{font-family:'Inter',sans-serif;background-color:#141414;color:#E5E5E5}
 .cart-item{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #444;padding:6px 0}
 .cart-item-title{font-size:.9rem}
 .cart-total{font-weight:700;margin-top:10px}
+
+/* --- Scroll dentro del carrito cuando hay muchas películas --- */
+#cart-dropdown {
+  max-height: 350px;       /* evita que se salga de la pantalla */
+  overflow-y: auto;        /* scroll vertical */
+  overflow-x: hidden;
+}
+
+/* Estilo del scroll */
+#cart-dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+
+#cart-dropdown::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 3px;
+}
+
+/* Footer fijo dentro del dropdown (para el botón de finalizar compra) */
+#cart-dropdown .checkout-footer {
+  position: sticky;
+  bottom: 0;
+  background: #2d2d2d;
+  padding: 10px 0;
+  border-top: 1px solid #444;
+}
+
+.favorite-star {
+  z-index: 1 !important;
+}
+
